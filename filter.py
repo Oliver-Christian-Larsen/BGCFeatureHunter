@@ -1,23 +1,32 @@
 import pandas as pd
 import numpy as np
 
-min_ratio = 0.6
 
 def get_colnames():
 
     path = "./output/"
     unfiltered = pd.read_csv(f"{path}/consensus_unfiltered.csv")
 
-    substrings =  [
-    "WT",
-    "OE",
-    "KO",
+    active_substrings =  [
+        "WT",
+        "OE",
+        "KO",
     ]
+
+    blank_substrings = [
+        "blank1"
+
+    ]
+
+    media_substrings = [
+        "YES"
+    ]
+
     conditions = {string: [] for string in substrings}
     cols = unfiltered.columns
     
     for col in cols:
-        for string in substrings:
+        for string in active_substrings:
             if string in col:
                 conditions[string].append(col)
     
@@ -40,11 +49,14 @@ def filter_cols(conditions, unfiltered, min_ratio):
 
     filtered_data = unfiltered[keep_rows].copy()
 
-
     return filtered_data
+
+def remove_blank():
+
 
 
 def main():
+    min_ratio = 0.6
 
     conditions, unfiltered, path = get_colnames()
     filtered_data = filter_cols(conditions,unfiltered,min_ratio)
