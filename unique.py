@@ -65,7 +65,7 @@ def known_features(unique_data):
 def main():
     unique_data = unique_features()
 
-    unique_data.to_csv('unique_features.csv', index=False)
+    unique_data.to_csv('./output/unique_features.csv', index=False)
 
     #known_features(unique_data)
 main()
