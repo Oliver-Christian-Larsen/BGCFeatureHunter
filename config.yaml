@@ -1,3 +1,5 @@
 preprocessing:
+  adduct_detection: true
   max_ppm_diff_combine_features: 10
+  max_rt_diff_combine_features: 40
   noise_threshold: 5000

@@ -7,9 +7,11 @@ def get_colnames():
     unfiltered = pd.read_csv(f"{path}/consensus_unfiltered.csv")
 
     active_substrings =  [
-        "WT",
+        "WT_P",
+        "WT_Y",
         #"OE",
-        "KO",
+        "DeltaP",
+        "DeltaY",
     ]
 
     blank_substrings = [

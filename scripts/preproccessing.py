@@ -36,9 +36,28 @@ def detect_elution_peaks(mass_traces):
         mass_traces_final = mass_traces_split
     return mass_traces_final
 
-def detect_features_from_traces(mass_traces_final):
+def adduct_detection(fmap):
+    mfd = oms.MetaboliteFeatureDeconvolution()
+    params = mfd.getDefaults()
+
+    params.setValue("potential_adducts", ["H:+:0.6", "Na:+:0.4", "H-2O-1:0:0.2"])
+    params.setValue("retention_max_diff", 3.0)
+    params.setValue("retention_max_diff_local", 3.0)
+    params.setValue("charge_min", 1, "Minimal possible charge")
+
+    mfd.setParameters(params)
+
+    adduct_fmap = oms.FeatureMap()
+    groups = oms.ConsensusMap()
+    edges = oms.ConsensusMap()
+
+    mfd.compute(fmap, adduct_fmap, groups, edges)
+
+    return adduct_fmap
+
+def detect_features_from_traces(mass_traces_final,config):
     print("Finding features from mass traces")
-    fm = oms.FeatureMap()
+    fmap = oms.FeatureMap()
     feat_chrom = []
     ffm = oms.FeatureFindingMetabo()
     ffm_params = ffm.getDefaults()
@@ -46,9 +65,15 @@ def detect_features_from_traces(mass_traces_final):
     ffm_params.setValue("remove_single_traces", "false") 
     ffm_params.setValue("report_convex_hulls", "true")
     ffm.setParameters(ffm_params)
-    ffm.run(mass_traces_final, fm, feat_chrom)
-    fm.setUniqueIds()
-    return fm
+    ffm.run(mass_traces_final, fmap, feat_chrom)
+    fmap.setUniqueIds()
+
+    if config["preprocessing"]["adduct_detection"] == True:
+        return adduct_detection(fmap)
+    else:
+        return fmap
+
+
 
 def save_features(feature_map, filename, path, output_path):
     base_name = os.path.splitext(filename)[0]
@@ -80,8 +105,6 @@ def align_feature_maps(feature_maps, filenames):
         transformer = oms.MapAlignmentTransformer()
         transformer.transformRetentionTimes(fmap, trafo, True) 
     return feature_maps, ref_filename, ref_index
-
-
 
     
 def link_features(feature_maps, filenames,config):
@@ -158,7 +181,7 @@ def main():
 
         mass_traces = detect_mass_traces(exp,config)
         mass_traces_final = detect_elution_peaks(mass_traces)
-        features = detect_features_from_traces(mass_traces_final)
+        features = detect_features_from_traces(mass_traces_final,config)
         
         all_features.append(features)
         save_features(features, fname, path, output_path)
