@@ -7,15 +7,13 @@ def unique_features():
 
     data_cols = data.iloc[:, 3:]
     positive_groups = [
-    "OE_Y",
-    "OE_P",
 
     "WT_Y",
     "WT_P",
 ]
     negative_groups = [
-    "KO_Y",
-    "KO_P"
+    "DeltaY",
+    "DeltaP"
 ]
 
     pos_cols = [col for col in data_cols if any(sub in col for sub in positive_groups)]
@@ -68,6 +66,6 @@ def main():
     unique_data.to_csv('./output/unique_features.csv', index=False)
 
     #known_features(unique_data)
-    
+
 if __name__ == "__main__":
     main()

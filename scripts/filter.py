@@ -8,7 +8,7 @@ def get_colnames():
 
     active_substrings =  [
         "WT",
-        "OE",
+        #"OE",
         "KO",
     ]
 
@@ -21,7 +21,7 @@ def get_colnames():
         "YES"
     ]
 
-    conditions = {string: [] for string in substrings}
+    conditions = {string: [] for string in active_substrings}
     cols = unfiltered.columns
     
     for col in cols:

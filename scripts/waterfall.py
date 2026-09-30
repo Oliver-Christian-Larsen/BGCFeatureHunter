@@ -11,7 +11,7 @@ import os
 
 MZML_DIR      = "./data/"
 CSV_FILE_PATH = "./output/unique_features.csv"
-OUTPUT_PDF    = "waterfall.pdf"
+OUTPUT_PDF    = "./output/waterfall.pdf"
 
 PPM_TOLERANCE = 10
 RT_BUFFER_SEC = 120.0
@@ -19,15 +19,15 @@ RT_BUFFER_SEC = 120.0
 # Values are substrings matched against mzML *filenames* (case-sensitive).
 #Plotting name : filesubstring
 GENOTYPE_SUBSTRINGS = {
-    "KO": "_KO_",
+    "KO": "_Delta",
     "WT": "_WT_",
-    "OE": "_OE_",
+    #"OE": "_OE_",
 }
 #Can be used if more than one medium is present
 #plotting name : medium substring in mzml filename
 MEDIA_SUBSTRINGS = {
-    "PDA": "_P_",
-    "YES": "_Y_",
+    "PDA": "P",
+    "YES": "Y",
 }
 
 # Color family encodes genotype; linestyle encodes media.
@@ -35,7 +35,7 @@ MEDIA_SUBSTRINGS = {
 GENOTYPE_COLORMAPS = {
     "WT": cm.Blues,
     "KO": cm.Reds,
-    "OE": cm.Purples
+    #"OE": cm.Purples
 }
 MEDIA_LINESTYLES = {
     "YES": "solid",
@@ -234,8 +234,7 @@ class WaterfallPipeline:
 
                 rt_min = max(0.0, target_rt - RT_BUFFER_SEC)
                 rt_max = target_rt + RT_BUFFER_SEC
-                common_time = np.linspace(rt_min, rt_max, 500)
-                t_min_axis = common_time / 60.0
+                
 
                 fig = plt.figure(figsize=(12, 8))
                 ax  = fig.add_subplot(111, projection='3d')
@@ -248,6 +247,8 @@ class WaterfallPipeline:
                     rt_raw, int_raw = cache.extract_trace(
                         target_mz, PPM_TOLERANCE, rt_min, rt_max
                     )
+
+                    t_min_axis = rt_raw / 60.0
 
                     ax.plot(
                         t_min_axis,
