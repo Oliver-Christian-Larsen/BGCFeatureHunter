@@ -216,7 +216,7 @@ class WaterfallPipeline:
                 Line2D([0], [0], color=cmap(0.70), lw=2.5, label=geno)
             )
 
-      handles.append(
+        handles.append(
             Line2D([0], [0], color='none', label='Media')
         )
         for media, ls in MEDIA_LINESTYLES.items():
