@@ -68,4 +68,6 @@ def main():
     unique_data.to_csv('./output/unique_features.csv', index=False)
 
     #known_features(unique_data)
-main()
+    
+if __name__ == "__main__":
+    main()

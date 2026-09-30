@@ -9,7 +9,7 @@ import pyopenms as poms
 import glob
 import os
 
-MZML_DIR      = "./cal_centroid_mzML/"
+MZML_DIR      = "./data/"
 CSV_FILE_PATH = "./output/unique_features.csv"
 OUTPUT_PDF    = "waterfall.pdf"
 

@@ -50,7 +50,6 @@ def filter_cols(conditions, unfiltered, min_ratio):
 
     return filtered_data
 
-def remove_blank():
 
 
 
@@ -64,4 +63,5 @@ def main():
     filtered_data.to_csv(output_filepath, index=False)
     print(f"saved to {output_filepath}")
 
-main()
+if __name__ == "__main__":
+    main()
