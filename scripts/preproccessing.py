@@ -5,7 +5,7 @@ import os
 import pandas as pd
 import gc
 def get_mzML_paths():
-    path = './cal_centroid_mzML' 
+    path = './data' 
     mzML_files = glob.glob(os.path.join(path, "*.mzML"))
     return mzML_files, path
 
