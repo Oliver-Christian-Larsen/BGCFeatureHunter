@@ -19,21 +19,21 @@ RT_BUFFER_SEC = 120.0
 # Values are substrings matched against mzML *filenames* (case-sensitive).
 #Plotting name : filesubstring
 GENOTYPE_SUBSTRINGS = {
-    "KO": "delta",
-    "WT": "wildtype",
-    "OE": "overexpression",
+    "KO": "_KO_",
+    "WT": "_WT_",
+    "OE": "_OE_",
 }
 #Can be used if more than one medium is present
 #plotting name : medium substring in mzml filename
 MEDIA_SUBSTRINGS = {
-    "PDA": "P",
-    "YES": "Y",
+    "PDA": "_P_",
+    "YES": "_Y_",
 }
 
 # Color family encodes genotype; linestyle encodes media.
 #Use the two previously established plotting names
 GENOTYPE_COLORMAPS = {
-    "WT":     cm.Blues,
+    "WT": cm.Blues,
     "KO": cm.Reds,
     "OE": cm.Purples
 }
