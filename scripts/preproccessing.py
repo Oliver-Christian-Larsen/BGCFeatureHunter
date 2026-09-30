@@ -4,18 +4,20 @@ import glob
 import os
 import pandas as pd
 import gc
+import yaml
+
 def get_mzML_paths():
     path = './data' 
     mzML_files = glob.glob(os.path.join(path, "*.mzML"))
     return mzML_files, path
 
-def detect_mass_traces(exp):
+def detect_mass_traces(exp,config):
     print("Detecting mass traces")
     mass_traces = []
     mtd = oms.MassTraceDetection()
     mtd_params = mtd.getDefaults()
     mtd_params.setValue("mass_error_ppm", 8.0)  
-    mtd_params.setValue("noise_threshold_int", 5000.0) 
+    mtd_params.setValue("noise_threshold_int", float(config["preprocessing"]["noise_threshold"])) 
     mtd.setParameters(mtd_params)
     mtd.run(exp, mass_traces, 0)
     return mass_traces
@@ -79,8 +81,10 @@ def align_feature_maps(feature_maps, filenames):
         transformer.transformRetentionTimes(fmap, trafo, True) 
     return feature_maps, ref_filename, ref_index
 
+
+
     
-def link_features(feature_maps, filenames):
+def link_features(feature_maps, filenames,config):
     print("Feature Linking")
     for i, (fmap, filename) in enumerate(zip(feature_maps, filenames)):
         fmap.setPrimaryMSRunPath([filename.encode()])
@@ -100,8 +104,8 @@ def link_features(feature_maps, filenames):
     feature_grouper = oms.FeatureGroupingAlgorithmQT()
     params = feature_grouper.getDefaults()
     params.setValue("distance_MZ:unit", "ppm")  
-    params.setValue("distance_MZ:max_difference", 10.0)
-    params.setValue("distance_RT:max_difference", 40.0)
+    params.setValue("distance_MZ:max_difference", float(config["preprocessing"]["max_ppm_diff_combine_features"]))
+    params.setValue("distance_RT:max_difference", float(config["preprocessing"]["max_rt_diff_combine_features"]))
     params.setValue("ignore_charge", "true")
     feature_grouper.setParameters(params)
     
@@ -128,6 +132,9 @@ def save_consensus_csv_unfiltered(consensus_map, output_path):
     return unfiltered_csv_path
 
 def main():
+    with open('config.yaml', 'r') as file:
+        config = yaml.safe_load(file)
+
     mzML_files, path = get_mzML_paths()
     if not mzML_files:
         print("No files found!")
@@ -149,7 +156,7 @@ def main():
         oms.MzMLFile().load(f_path, exp)
         exp.sortSpectra(True)
 
-        mass_traces = detect_mass_traces(exp)
+        mass_traces = detect_mass_traces(exp,config)
         mass_traces_final = detect_elution_peaks(mass_traces)
         features = detect_features_from_traces(mass_traces_final)
         
@@ -164,7 +171,7 @@ def main():
 
     all_features, ref_file, ref_index = align_feature_maps(all_features, filenames)
   
-    consensus_map = link_features(all_features, filenames)
+    consensus_map = link_features(all_features, filenames,config)
 
     del all_features
     gc.collect()
