@@ -45,10 +45,6 @@ MEDIA_LINESTYLES = {
 # Extra vertical spacing inserted between genotype blocks in the waterfall.
 GENOTYPE_GAP = 2.0
 
-# Column names for input csv (headerless from unique_features.py)
-CSV_COLUMNS = ["rt", "mz", "quality", "mean_intensity_positive"]
-
-
 def _sci_formatter(x, pos):
     if x == 0:
         return "0"
