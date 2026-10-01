@@ -1,5 +1,7 @@
 data/*
 
+my_data/*
+
 output/*
 
 scripts/__pycache__*

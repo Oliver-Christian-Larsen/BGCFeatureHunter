@@ -68,6 +68,7 @@ def classify_one_file(file_path, group_substrings, media_substrings):
 
 def print_summary(classified_files):
     print("\n--- File classification ---")
+    print(f"A total of {len(classified_files)} has been identified")
     for info in classified_files:
         print(f"{info['filename']:50} group={info['group']}  media={info['media']}")
 
