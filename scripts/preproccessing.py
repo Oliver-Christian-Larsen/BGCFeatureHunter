@@ -4,7 +4,6 @@ import glob
 import os
 import pandas as pd
 import gc
-import yaml
 
 def get_mzML_paths():
     path = './data' 
@@ -16,7 +15,7 @@ def detect_mass_traces(exp,config):
     mass_traces = []
     mtd = oms.MassTraceDetection()
     mtd_params = mtd.getDefaults()
-    mtd_params.setValue("mass_error_ppm", 8.0)  
+    mtd_params.setValue("mass_error_ppm", float(config["preprocessing"]["mass_trace_ppm"]))  
     mtd_params.setValue("noise_threshold_int", float(config["preprocessing"]["noise_threshold"])) 
     mtd.setParameters(mtd_params)
     mtd.run(exp, mass_traces, 0)
@@ -44,14 +43,13 @@ def detect_features_from_traces(mass_traces_final,config):
     ffm = oms.FeatureFindingMetabo()
     ffm_params = ffm.getDefaults()
     ffm_params.setValue("isotope_filtering_model", "none")
-    ffm_params.setValue("remove_single_traces", "false") 
+    ffm_params.setValue("remove_single_traces", str(config["preprocessing"]["remove_single_traces"])) 
     ffm_params.setValue("report_convex_hulls", "true")
     ffm.setParameters(ffm_params)
     ffm.run(mass_traces_final, fmap, feat_chrom)
     fmap.setUniqueIds()
 
     return fmap
-
 
 
 def save_features(feature_map, filename, path, output_path):
@@ -133,10 +131,7 @@ def save_consensus_csv_unfiltered(consensus_map, output_path):
     print(f"Saved Unfiltered CSV to: {unfiltered_csv_path}")
     return unfiltered_csv_path
 
-def main():
-    with open('config.yaml', 'r') as file:
-        config = yaml.safe_load(file)
-
+def main(config):
     mzML_files, path = get_mzML_paths()
     if not mzML_files:
         print("No files found!")

@@ -53,10 +53,8 @@ def filter_cols(conditions, unfiltered, min_ratio):
     return filtered_data
 
 
-
-
-def main():
-    min_ratio = 0.6
+def main(config):
+    min_ratio = float(config["filter"]["present_ratio"])
 
     conditions, unfiltered, path = get_colnames()
     filtered_data = filter_cols(conditions,unfiltered,min_ratio)

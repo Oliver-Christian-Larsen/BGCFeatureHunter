@@ -1,5 +1,13 @@
+filter:
+  present_ratio: 0.6
 preprocessing:
-  adduct_detection: true
+  mass_trace_ppm: 8
   max_ppm_diff_combine_features: 10
   max_rt_diff_combine_features: 40
   noise_threshold: 5000
+  remove_single_traces: 'false'
+unique:
+  OE_LFC_to_WT: 2
+  WT_LFC_to_KO: 6
+  allow_KO_detection: true
+  model_OE_LFC: false
