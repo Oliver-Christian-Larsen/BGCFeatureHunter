@@ -1,4 +1,4 @@
-A simple PyOpenMS-based pipeline for detection and visualization of candidate features, originating from a genetically engineered biosynthetic gene cluster.
+A simple PyOpenMS-based pipeline for detection and visualization of candidate features, originating from a genetically engineered biosynthetic gene cluster. Still very broken, but will hopefully be running smoothly from CLI soon!
 
 The input to the pipeline is calibrated centroid .mzML files. Brifly, the workflow is as follows:
 
