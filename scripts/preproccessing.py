@@ -5,11 +5,6 @@ import os
 import pandas as pd
 import gc
 
-def get_mzML_paths():
-    path = './data' 
-    mzML_files = glob.glob(os.path.join(path, "*.mzML"))
-    return mzML_files, path
-
 def detect_mass_traces(exp,config):
     print("Detecting mass traces")
     mass_traces = []

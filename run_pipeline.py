@@ -23,9 +23,9 @@ args = parser.parse_args()
 
 arg_dic = {
     "strain" : {
-        "wt" : args.wt,
-        "ko" : args.ko,
-        "oe" : args.oe,
+        "KO" : args.ko,
+        "WT" : args.wt,
+        "OE" : args.oe,
     },
     "media" : args.media or [],
     "blank": args.blank,

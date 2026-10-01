@@ -30,7 +30,7 @@ def _sci_formatter(x, pos):
 
 SCI_FORMATTER = ticker.FuncFormatter(_sci_formatter)
 
-GENOTYPE_COLORMAPS = {"wt": cm.Blues, "ko": cm.Reds, "oe": cm.Purples}
+GENOTYPE_COLORMAPS = {"WT": cm.Blues, "KO": cm.Reds, "OE": cm.Purples}
 LINESTYLE_CYCLE    = ["solid", "dashed", "dotted", "dashdot"]
 
 def build_settings(arg_dic):
