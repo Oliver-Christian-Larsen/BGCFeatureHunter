@@ -36,24 +36,6 @@ def detect_elution_peaks(mass_traces):
         mass_traces_final = mass_traces_split
     return mass_traces_final
 
-def adduct_detection(fmap):
-    mfd = oms.MetaboliteFeatureDeconvolution()
-    params = mfd.getDefaults()
-
-    params.setValue("potential_adducts", ["H:+:0.6", "Na:+:0.4", "H-2O-1:0:0.2"])
-    params.setValue("retention_max_diff", 3.0)
-    params.setValue("retention_max_diff_local", 3.0)
-    params.setValue("charge_min", 1, "Minimal possible charge")
-
-    mfd.setParameters(params)
-
-    adduct_fmap = oms.FeatureMap()
-    groups = oms.ConsensusMap()
-    edges = oms.ConsensusMap()
-
-    mfd.compute(fmap, adduct_fmap, groups, edges)
-
-    return adduct_fmap
 
 def detect_features_from_traces(mass_traces_final,config):
     print("Finding features from mass traces")
@@ -68,10 +50,7 @@ def detect_features_from_traces(mass_traces_final,config):
     ffm.run(mass_traces_final, fmap, feat_chrom)
     fmap.setUniqueIds()
 
-    if config["preprocessing"]["adduct_detection"] == True:
-        return adduct_detection(fmap)
-    else:
-        return fmap
+    return fmap
 
 
 
