@@ -131,8 +131,10 @@ def save_consensus_csv_unfiltered(consensus_map, output_path):
     print(f"Saved Unfiltered CSV to: {unfiltered_csv_path}")
     return unfiltered_csv_path
 
-def main(config):
-    mzML_files, path = get_mzML_paths()
+def main(config,arg_dic,mzML_files):
+        
+    path = arg_dic["paths"]["mzml"]
+
     if not mzML_files:
         print("No files found!")
         return

@@ -104,4 +104,4 @@ def main(arg_dic):
 
     print_summary(classified_files)
 
-    return classified_files
+    return classified_files,mzml_files

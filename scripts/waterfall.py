@@ -9,38 +9,12 @@ import pyopenms as poms
 import glob
 import os
 
-MZML_DIR      = "./data/"
 CSV_FILE_PATH = "./output/unique_features.csv"
 OUTPUT_PDF    = "./output/waterfall.pdf"
 
 PPM_TOLERANCE = 10
 RT_BUFFER_SEC = 120.0
 
-# Values are substrings matched against mzML *filenames* (case-sensitive).
-#Plotting name : filesubstring
-GENOTYPE_SUBSTRINGS = {
-    "KO": "_Delta",
-    "WT": "_WT_",
-    #"OE": "_OE_",
-}
-#Can be used if more than one medium is present
-#plotting name : medium substring in mzml filename
-MEDIA_SUBSTRINGS = {
-    "PDA": "P",
-    "YES": "Y",
-}
-
-# Color family encodes genotype; linestyle encodes media.
-#Use the two previously established plotting names
-GENOTYPE_COLORMAPS = {
-    "WT": cm.Blues,
-    "KO": cm.Reds,
-    #"OE": cm.Purples
-}
-MEDIA_LINESTYLES = {
-    "YES": "solid",
-    "PDA": "dashed",
-}
 
 # Extra vertical spacing inserted between genotype blocks in the waterfall.
 GENOTYPE_GAP = 2.0
@@ -56,15 +30,24 @@ def _sci_formatter(x, pos):
 
 SCI_FORMATTER = ticker.FuncFormatter(_sci_formatter)
 
+GENOTYPE_COLORMAPS = {"wt": cm.Blues, "ko": cm.Reds, "oe": cm.Purples}
+LINESTYLE_CYCLE    = ["solid", "dashed", "dotted", "dashdot"]
 
-def classify_files(all_mzml_files):
-    classified = {g: {m: [] for m in MEDIA_SUBSTRINGS} for g in GENOTYPE_SUBSTRINGS}
-    unmatched  = []
+def build_settings(arg_dic):
+    genotypes = {k: v for k, v in arg_dic["strain"].items() if v}
+    media = {m: m for m in arg_dic["media"]} or {"all": ""}
+    linestyles = {m: LINESTYLE_CYCLE[i % len(LINESTYLE_CYCLE)] for i, m in enumerate(media)}
+    return genotypes, media, linestyles
 
+def classify_files(all_mzml_files, genotypes, media_subs, blank=None):
+    classified = {g: {m: [] for m in media_subs} for g in genotypes}
+    unmatched = []
     for fp in all_mzml_files:
-        fname    = os.path.basename(fp)
-        genotype = next((g for g, sub in GENOTYPE_SUBSTRINGS.items() if sub in fname), None)
-        media    = next((m for m, sub in MEDIA_SUBSTRINGS.items()    if sub in fname), None)
+        fname = os.path.basename(fp)
+        if blank and blank in fname:
+            continue
+        genotype = next((g for g, sub in genotypes.items()  if sub in fname), None)
+        media = next((m for m, sub in media_subs.items() if sub in fname), None)
 
         if genotype and media:
             classified[genotype][media].append(fp)
@@ -78,14 +61,14 @@ def classify_files(all_mzml_files):
     return classified
 
 
-def build_ordered_samples(classified):
+def build_ordered_samples(classified, genotypes, media_subs, linestyles):
     samples = []
 
-    for genotype in GENOTYPE_SUBSTRINGS:
+    for genotype in genotypes:
         cmap = GENOTYPE_COLORMAPS[genotype]
 
         files_for_genotype = []
-        for media in MEDIA_SUBSTRINGS:
+        for media in media_subs:
             for fp in sorted(classified[genotype][media]):
                 files_for_genotype.append((fp, media))
 
@@ -99,7 +82,7 @@ def build_ordered_samples(classified):
                 "genotype":  genotype,
                 "media":     media,
                 "color":     cmap(shade_values[i]),
-                "linestyle": MEDIA_LINESTYLES[media],
+                "linestyle": linestyles[media],
             })
 
     y = 0.0
@@ -115,8 +98,9 @@ def build_ordered_samples(classified):
 
 class MS1Cache:
     def __init__(self, filepath):
-        self.filepath = filepath
-        self.filename = os.path.basename(filepath)
+    
+        self.filepath  = filepath
+        self.filename  = os.path.basename(filepath)
         self.rts = []
         self.mz_arrays = []
         self.int_arrays = []
@@ -165,23 +149,26 @@ class MS1Cache:
         return np.array(xic_rt), np.array(xic_int)
 
 class WaterfallPipeline:
-    def __init__(self):
-        if not os.path.exists(MZML_DIR):
-            raise FileNotFoundError(f"mzML directory not found: {MZML_DIR}")
-        if not os.path.exists(CSV_FILE_PATH):
-            raise FileNotFoundError(f"Feature CSV not found: {CSV_FILE_PATH}")
+    def __init__(self,arg_dic):
+        self.output_pdf = os.path.join(arg_dic["paths"]["out"], "waterfall.pdf")
+        if not os.path.exists(f"{arg_dic['paths']['out']}/unique_features.csv"):
+            raise FileNotFoundError(f"Unique Feature CSV not found: {f"{arg_dic['paths']['out']}/unique_features.csv"}")
 
-        self.df = pd.read_csv(CSV_FILE_PATH)
+        self.df = pd.read_csv(f"{arg_dic['paths']['out']}/unique_features.csv")
+
         if self.df.empty:
             raise ValueError("Feature CSV is empty.")
 
-        all_files = sorted(glob.glob(os.path.join(MZML_DIR, "*.mzML")))
+        all_files = sorted(glob.glob(os.path.join(arg_dic['paths']['mzml'], "*.mzML")))
         if not all_files:
-            raise FileNotFoundError(f"No .mzML files found in {MZML_DIR}")
+            raise FileNotFoundError(f"No .mzML files found in {arg_dic['paths']['mzml']}")
 
-        classified = classify_files(all_files)
-        self.samples = build_ordered_samples(classified)
 
+
+        self.genotypes, self.media, self.linestyles = build_settings(arg_dic)
+        classified = classify_files(all_files, self.genotypes, self.media, arg_dic["blank"])
+        self.samples = build_ordered_samples(classified, self.genotypes, self.media, self.linestyles)
+        
         if not self.samples:
             raise ValueError(
                 "No mzML files could be classified. "
@@ -207,18 +194,18 @@ class WaterfallPipeline:
         handles.append(
             Line2D([0], [0], color='none', label='Genotype')
         )
-        for geno, cmap in GENOTYPE_COLORMAPS.items():
-            handles.append(
-                Line2D([0], [0], color=cmap(0.70), lw=2.5, label=geno)
-            )
+
+        for geno in self.genotypes:
+            handles.append(Line2D([0], [0], color=GENOTYPE_COLORMAPS[geno](0.70), lw=2.5, label=geno))
+
 
         handles.append(
             Line2D([0], [0], color='none', label='Media')
         )
-        for media, ls in MEDIA_LINESTYLES.items():
-            handles.append(
-                Line2D([0], [0], color='dimgray', lw=2, linestyle=ls, label=media)
-            )
+
+        for media, ls in self.linestyles.items():
+            handles.append(Line2D([0], [0], color='dimgray', lw=2, linestyle=ls, label=media))
+            
 
         return handles
 
@@ -227,7 +214,7 @@ class WaterfallPipeline:
         total    = len(features)
         print(f"Processing {total} feature(s)")
 
-        with PdfPages(OUTPUT_PDF) as pdf:
+        with PdfPages(self.output_pdf) as pdf:
             for idx, (target_rt, target_mz) in enumerate(features, 1):
                 print(f"[{idx:>{len(str(total))}}/{total}]  "
                       f"mz={target_mz:.4f}  rt={target_rt:.1f} s")
@@ -285,7 +272,7 @@ class WaterfallPipeline:
                 pdf.savefig(fig, bbox_inches='tight')
                 plt.close(fig)
 
-        print(f"Output saved to {OUTPUT_PDF}")
+        print(f"Output saved to {self.output_pdf}")
 
 
 if __name__ == "__main__":
