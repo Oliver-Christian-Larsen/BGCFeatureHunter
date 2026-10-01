@@ -2,5 +2,6 @@ data/*
 
 output/*
 
+scripts/__pycache__*
 
 create_yaml.py
