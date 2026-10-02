@@ -50,7 +50,7 @@ with open('config.yaml', 'r') as file:
     config = yaml.safe_load(file)
 
 pp.main(config,arg_dic,mzml_files)
-filter.main(config,arg_dic,classified_files)
+filter_features.main(config,arg_dic,classified_files)
 
 unique.main(config,arg_dic,classified_files)
 
