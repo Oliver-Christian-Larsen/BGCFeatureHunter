@@ -1,5 +1,5 @@
 from scripts import classify_files
-from scripts import preproccessing as pp
+from scripts import preprocessing as pp
 from scripts import filter
 from scripts import unique
 from scripts import waterfall
