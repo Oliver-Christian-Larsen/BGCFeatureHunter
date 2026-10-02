@@ -189,7 +189,7 @@ class WaterfallPipeline:
         return self.caches[filepath]
 
 
-    def _legend_handles(self):
+    def _legend_handles(self,arg_dic):
         handles = []
 
         handles.append(
@@ -197,7 +197,8 @@ class WaterfallPipeline:
         )
 
         for geno in self.genotypes:
-            handles.append(Line2D([0], [0], color=GENOTYPE_COLORMAPS[geno](0.70), lw=2.5, label=geno))
+            show_name = arg_dic["display_names"][geno]
+            handles.append(Line2D([0], [0], color=GENOTYPE_COLORMAPS[geno](0.70), lw=2.5, label=show_name))
 
 
         handles.append(
@@ -210,7 +211,7 @@ class WaterfallPipeline:
 
         return handles
 
-    def run(self):
+    def run(self,arg_dic):
         features = [(float(rt), float(mz)) for rt, mz in self.df[['rt', 'mz']].itertuples(index=False, name=None)]
         total    = len(features)
         print(f"Processing {total} feature(s)")
@@ -261,7 +262,7 @@ class WaterfallPipeline:
                 )
 
                 ax.legend(
-                    handles       = self._legend_handles(),
+                    handles       = self._legend_handles(arg_dic),
                     loc           = 'center left',
                     bbox_to_anchor= (1.05, 0.5),
                     frameon       = False,
@@ -277,5 +278,5 @@ class WaterfallPipeline:
 
 
 if __name__ == "__main__":
-    pipeline = WaterfallPipeline()
-    pipeline.run()
+    pipeline = WaterfallPipeline(arg_dic)
+    pipeline.run(arg_dic)
