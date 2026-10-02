@@ -9,10 +9,6 @@ import pyopenms as poms
 import glob
 import os
 
-
-
-GENOTYPE_GAP = 2.0
-
 def _sci_formatter(x, pos):
     if x == 0:
         return "0"
@@ -83,7 +79,7 @@ def build_ordered_samples(classified_files, requested_media):
     current_genotype = None
     for sample in samples:
         if current_genotype is not None and sample["genotype"] != current_genotype:
-            y += GENOTYPE_GAP
+            y += 2
         sample["y_pos"] = y
         y += 1.0
         current_genotype = sample["genotype"]
