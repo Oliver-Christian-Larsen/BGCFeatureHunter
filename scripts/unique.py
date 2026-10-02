@@ -5,7 +5,7 @@ import numpy as np
 def get_cols(arg_dic,classified_files):
     pos_cols = []
     neg_cols = []
-    if arg_dic.get("OE") is not None:
+    if arg_dic["strain"].get("OE") is not None:
         oe_cols = []
     for c in classified_files:
         filename = c["filename"].split(".")[0]
@@ -16,7 +16,7 @@ def get_cols(arg_dic,classified_files):
         if c["group"] == "OE" and arg_dic.get("OE") is not None:
             oe_cols.append(filename)
 
-    if arg_dic.get("OE") is not None:
+    if arg_dic["strain"].get("OE") is not None:
         return pos_cols, neg_cols, oe_cols
     else:
         return pos_cols, neg_cols
@@ -63,14 +63,14 @@ def known_features(unique_data):
             print(f"Target mass {i} is not found!")
 
 def main(config,arg_dic,classified_files):
-    if arg_dic.get("OE") is not None:
+    if arg_dic["strain"].get("OE") is not None:
         pos_cols, neg_cols, oe_cols = get_cols(arg_dic,classified_files)
     else:
         pos_cols, neg_cols = get_cols(arg_dic,classified_files)
 
     
     data = pd.read_csv(f"{arg_dic["paths"]["out"]}/consensus_filtered.csv")
-    if arg_dic.get("OE") is not None:
+    if arg_dic["strain"].get("OE") is not None:
         unique_data = unique_features(pos_cols,neg_cols,data,config,oe_cols)
     else:
         unique_data = unique_features(pos_cols,neg_cols,data,config,oe_cols=None)
