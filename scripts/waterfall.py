@@ -33,32 +33,6 @@ SCI_FORMATTER = ticker.FuncFormatter(_sci_formatter)
 GENOTYPE_COLORMAPS = {"WT": cm.Blues, "KO": cm.Reds, "OE": cm.Purples}
 LINESTYLE_CYCLE    = ["solid", "dashed", "dotted", "dashdot"]
 
-def classify_files(all_mzml_files, genotypes, media_subs, blank=None):
-    classified = {g: {m: [] for m in media_subs} for g in genotypes}
-    unmatched = []
-    for fp in all_mzml_files:
-        fname = os.path.basename(fp)
-        if blank and blank in fname:
-            continue
-        genotype = next((g for g, sub in genotypes.items()  if sub in fname), None)
-        media = next((m for m, sub in media_subs.items() if sub in fname), None)
-
-        if genotype and media:
-            classified[genotype][media].append(fp)
-        else:
-            unmatched.append(fname)
-
-    if unmatched:
-        print(f"[Warning] {len(unmatched)} file(s) could not be classified "
-              f"(no matching genotype+media substring): {unmatched}")
-
-    print("Waterfall here!")
-    print(classified)
-    print("to here")
-
-    return classified
-
-
 def build_ordered_samples(classified_files):
     samples = []
     genotypes = []
@@ -192,9 +166,6 @@ class WaterfallPipeline:
             raise FileNotFoundError(f"No .mzML files found in {arg_dic['paths']['mzml']}")
 
 
-
-       # self.genotypes, self.media, self.linestyles = build_settings(arg_dic)
-        #classified = classify_files(all_files, self.genotypes, self.media, arg_dic["blank"])
         self.samples = build_ordered_samples(classified_files)
         
         if not self.samples:
