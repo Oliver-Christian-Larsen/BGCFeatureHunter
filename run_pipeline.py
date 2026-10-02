@@ -1,6 +1,6 @@
 from scripts import classify_files
 from scripts import preprocessing as pp
-from scripts import filter
+from scripts import filter_features
 from scripts import unique
 from scripts import waterfall
 
