@@ -11,7 +11,6 @@ def get_mzML_paths(arg_dic):
 
     return mzml_files
 
-
 def find_matches(filename, substrings):
 
     matches = []
@@ -25,7 +24,6 @@ def find_matches(filename, substrings):
             matches.append(label)
 
     return matches
-
 
 def classify_one_file(file_path, group_substrings, media_substrings):
     filename = os.path.basename(file_path)
@@ -65,7 +63,6 @@ def classify_one_file(file_path, group_substrings, media_substrings):
         "media": media,
     }
 
-
 def print_summary(classified_files):
     print("\n--- File classification ---")
     print(f"A total of {len(classified_files)} has been identified")
@@ -81,7 +78,6 @@ def print_summary(classified_files):
         print("\nWARNING: these files matched no group. They will be preprocessed, but not used in subsequent analysis:")
         for name in unclassified:
             print(f"  {name}")
-
 
 def main(arg_dic):
     mzml_files = get_mzML_paths(arg_dic)
@@ -102,6 +98,4 @@ def main(arg_dic):
         classified_files.append(file_info)
 
     print_summary(classified_files)
-
-
     return classified_files,mzml_files
