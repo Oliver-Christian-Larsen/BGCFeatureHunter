@@ -1,5 +1,4 @@
 import pyopenms as oms
-from pyopenms import *
 import glob
 import os
 import pandas as pd
