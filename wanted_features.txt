@@ -25,3 +25,6 @@ Resampling:
 
 MS2 support:
 -Add support for FBMM, or other MS2 methods, and draw the molecular netowrks
+
+Probability
+-Implement a scoring, where the coloumns are shuffled, and unique features are detected. Will give an estimate of how clean the dataset is
