@@ -9,20 +9,16 @@ def get_cols(arg_dic,classified_files):
         oe_cols = []
     for c in classified_files:
         filename = c["filename"].split(".")[0]
-        print(filename)
         if c["group"] == "WT":
             pos_cols.append(filename)
         if c["group"] == "KO":
             neg_cols.append(filename)
         if c["group"] == "OE" and arg_dic.get("OE") is not None:
             oe_cols.append(filename)
-    print(pos_cols,neg_cols)
 
     if arg_dic.get("OE") is not None:
-        print("wrong path")
         return pos_cols, neg_cols, oe_cols
     else:
-        print("right path")
         return pos_cols, neg_cols
 
 def unique_features(pos_cols, neg_cols, data,config,oe_cols):

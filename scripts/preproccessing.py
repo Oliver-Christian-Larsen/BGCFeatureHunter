@@ -6,9 +6,9 @@ import pandas as pd
 import gc
 
 def detect_mass_traces(exp,config):
-    print("Detecting mass traces")
     mass_traces = []
     mtd = oms.MassTraceDetection()
+    mtd.setLogType(oms.LogType.NONE)
     mtd_params = mtd.getDefaults()
     mtd_params.setValue("mass_error_ppm", float(config["preprocessing"]["mass_trace_ppm"]))  
     mtd_params.setValue("noise_threshold_int", float(config["preprocessing"]["noise_threshold"])) 
@@ -17,10 +17,10 @@ def detect_mass_traces(exp,config):
     return mass_traces
 
 def detect_elution_peaks(mass_traces):
-    print("Detecting elution peaks")
     mass_traces_split, mass_traces_final = [], []
     epd = oms.ElutionPeakDetection()
     epd_params = epd.getDefaults()
+    epd.setLogType(oms.LogType.NONE)
     epd_params.setValue("width_filtering", "fixed") 
     epd.setParameters(epd_params)
     epd.detectPeaks(mass_traces, mass_traces_split)
@@ -32,10 +32,10 @@ def detect_elution_peaks(mass_traces):
 
 
 def detect_features_from_traces(mass_traces_final,config):
-    print("Finding features from mass traces")
     fmap = oms.FeatureMap()
     feat_chrom = []
     ffm = oms.FeatureFindingMetabo()
+    ffm.setLogType(oms.LogType.NONE)
     ffm_params = ffm.getDefaults()
     ffm_params.setValue("isotope_filtering_model", "none")
     ffm_params.setValue("remove_single_traces", str(config["preprocessing"]["remove_single_traces"])) 
@@ -54,7 +54,6 @@ def save_features(feature_map, filename, path, output_path):
 
     output_file = os.path.join(output_dir, f"{base_name}.featureXML")
     oms.FeatureXMLFile().store(output_file, feature_map)
-    print(f"Saved to: {output_file}")
     return output_file
 
 def align_feature_maps(feature_maps, filenames):
@@ -62,16 +61,16 @@ def align_feature_maps(feature_maps, filenames):
     ref_index = max(range(len(feature_maps)), key=lambda i: feature_maps[i].size())
     ref_map = feature_maps[ref_index]
     ref_filename = filenames[ref_index]
-    print(f"  Using '{ref_filename}' as reference (features: {ref_map.size()})")
+    print(f"Using '{ref_filename}' as reference (features: {ref_map.size()})")
 
     aligner = oms.MapAlignmentAlgorithmPoseClustering()
+    aligner.setLogType(oms.LogType.NONE)
     aligner.setReference(ref_map)
     params = aligner.getParameters()
     aligner.setParameters(params)
 
     for i, fmap in enumerate(feature_maps):
         if i == ref_index: continue
-        print(f"Aligning '{filenames[i]}' to reference")
         trafo = oms.TransformationDescription()
         aligner.align(fmap, trafo)
         transformer = oms.MapAlignmentTransformer()
@@ -80,7 +79,6 @@ def align_feature_maps(feature_maps, filenames):
 
     
 def link_features(feature_maps, filenames,config):
-    print("Feature Linking")
     for i, (fmap, filename) in enumerate(zip(feature_maps, filenames)):
         fmap.setPrimaryMSRunPath([filename.encode()])
         for feature in fmap:
@@ -126,8 +124,7 @@ def save_consensus_csv_unfiltered(consensus_map, output_path):
     print(f"Saved Unfiltered CSV to: {unfiltered_csv_path}")
     return unfiltered_csv_path
 
-def main(config,arg_dic,mzML_files):
-        
+def main(config,arg_dic,mzML_files):        
     path = arg_dic["paths"]["mzml"]
 
     if not mzML_files:
@@ -144,7 +141,7 @@ def main(config,arg_dic,mzML_files):
 
     for f_path in mzML_files:
         fname = os.path.basename(f_path)
-        print(f"Loading {fname}")
+        print(f"Processing {fname}")
         
         exp = oms.MSExperiment()
         oms.MzMLFile().load(f_path, exp)

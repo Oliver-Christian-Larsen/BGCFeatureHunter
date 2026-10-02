@@ -76,7 +76,7 @@ def print_summary(classified_files):
     if unclassified:
         print("\nWARNING: these files matched no group. They will be preprocessed, but not used in subsequent analysis:")
         for name in unclassified:
-            print(f"  {name}")
+            print(f"{name}")
 
 def main(arg_dic):
     mzml_files = get_mzML_paths(arg_dic)

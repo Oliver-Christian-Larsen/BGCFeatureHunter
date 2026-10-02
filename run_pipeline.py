@@ -49,7 +49,7 @@ classified_files,mzml_files = classify_files.main(arg_dic)
 with open('config.yaml', 'r') as file:
     config = yaml.safe_load(file)
 
-#pp.main(config,arg_dic,mzml_files)
+pp.main(config,arg_dic,mzml_files)
 filter.main(config,arg_dic,classified_files)
 
 unique.main(config,arg_dic,classified_files)

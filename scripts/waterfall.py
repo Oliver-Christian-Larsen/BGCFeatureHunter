@@ -170,10 +170,6 @@ class WaterfallPipeline:
                 "Check GENOTYPE_SUBSTRINGS and MEDIA_SUBSTRINGS."
             )
 
-        print(f"Classified {len(self.samples)} file(s):")
-        for s in self.samples:
-            print(f"[genotype={s['genotype']:8s}  media={s['media']:8s}]  {s['filename']}")
-
         self.caches = {}
 
     def _get_cache(self, filepath):

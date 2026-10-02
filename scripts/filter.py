@@ -19,7 +19,6 @@ def get_conditions(classified_files, columns):
 
         conditions[(group, info["media"])].append(col)
 
-    print(conditions)
     return dict(conditions)
 
 def filter_cols(conditions, unfiltered, min_ratio):
