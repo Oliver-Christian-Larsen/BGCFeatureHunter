@@ -1,66 +1,48 @@
 import pandas as pd
-import numpy as np
+from collections import defaultdict
+from pathlib import Path
 
-def get_colnames(arg_dic):
-    path = arg_dic["paths"]["out"]
-    unfiltered = pd.read_csv(f"{path}/consensus_unfiltered.csv")
 
-    active_substrings =  [
-        "WT_P",
-        "WT_Y",
-        #"OE",
-        "DeltaP",
-        "DeltaY",
-    ]
+def get_conditions(classified_files, columns):
+    available = set(columns)
+    conditions = defaultdict(list)
 
-    blank_substrings = [
-        "blank1"
+    for info in classified_files:
+        group = info["group"]
+        if group is None or group == "blank":
+            continue
 
-    ]
+        col = info["filename"].replace(".mzML", "")
+        if col not in available:
+            print(f"WARNING: no column '{col}' in consensus table, skipping")
+            continue
 
-    media_substrings = [
-        "YES"
-    ]
+        conditions[(group, info["media"])].append(col)
 
-    conditions = {string: [] for string in active_substrings}
-    cols = unfiltered.columns
-    
-    for col in cols:
-        for string in active_substrings:
-            if string in col:
-                conditions[string].append(col)
-    
-    return conditions, unfiltered, path
+    print(conditions)
+    return dict(conditions)
 
 def filter_cols(conditions, unfiltered, min_ratio):
-    data_cols = unfiltered.iloc[:, 3:]
-    
+    data_cols = unfiltered.iloc[:, 4:]
     ratio_matrix = pd.DataFrame(index=unfiltered.index)
 
-    for condition, columns in conditions.items():
-        valid_cols = [c for c in columns if c in data_cols.columns]
-        replicate = data_cols[valid_cols]
-        valid_features = (replicate > 0).sum(axis=1)
-
-        condition_ratio = valid_features / len(valid_cols)
-        ratio_matrix[condition] = condition_ratio
+    for (group, media), columns in conditions.items():
+        columns = list(dict.fromkeys(columns))
+        present = (data_cols[columns] > 0).sum(axis=1)
+        ratio_matrix[f"{group}_{media}"] = present / len(columns)
 
     keep_rows = (ratio_matrix >= min_ratio).any(axis=1)
-
-    filtered_data = unfiltered[keep_rows].copy()
-
-    return filtered_data
+    return unfiltered[keep_rows].copy(), ratio_matrix
 
 
-def main(config,arg_dic):
+def main(config, arg_dic, classified_files):
+    path = arg_dic["paths"]["out"]
+    unfiltered = pd.read_csv(f"{path}/consensus_unfiltered.csv")
     min_ratio = float(config["filter"]["present_ratio"])
 
-    conditions, unfiltered, path = get_colnames(arg_dic)
-    filtered_data = filter_cols(conditions,unfiltered,min_ratio)
-    output_filepath = f"{path}/consensus_filtered.csv"
+    conditions = get_conditions(classified_files, unfiltered.columns[4:])
 
-    filtered_data.to_csv(output_filepath, index=False)
-    print(f"saved to {output_filepath}")
+    filtered, ratio_matrix = filter_cols(conditions, unfiltered, min_ratio)
 
-if __name__ == "__main__":
-    main()
+    filtered.to_csv(f"{path}/consensus_filtered.csv", index=False)
+    print(f"Kept {len(filtered)}/{len(unfiltered)} features")
