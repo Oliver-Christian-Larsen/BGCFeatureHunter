@@ -55,7 +55,6 @@ def classify_one_file(file_path, group_substrings, media_substrings):
         media = media_matches[0]
     else:
         media = None
-
     return {
         "filepath": file_path,
         "filename": filename,

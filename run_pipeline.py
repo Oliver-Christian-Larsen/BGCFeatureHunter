@@ -52,7 +52,7 @@ with open('config.yaml', 'r') as file:
 #pp.main(config,arg_dic,mzml_files)
 filter.main(config,arg_dic,classified_files)
 
-unique.main(config,arg_dic)
+unique.main(config,arg_dic,classified_files)
 
 pipe = waterfall.WaterfallPipeline(arg_dic,classified_files)
 pipe.run(arg_dic,config)

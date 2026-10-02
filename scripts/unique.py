@@ -1,31 +1,31 @@
 import pandas as pd
 import numpy as np
 
-def get_cols(data):
-    data_cols = data.iloc[:, 3:]
-    positive_groups = [
-    "WT_Y",
-    "WT_P",
-]
-    negative_groups = [
-    "DeltaY",
-    "DeltaP"
-]
 
-    pos_cols = [col for col in data_cols if any(sub in col for sub in positive_groups)]
-    neg_cols = [col for col in data_cols if any(sub in col for sub in negative_groups)]
+def get_cols(arg_dic,classified_files):
+    pos_cols = []
+    neg_cols = []
+    if arg_dic.get("OE") is not None:
+        oe_cols = []
+    for c in classified_files:
+        filename = c["filename"].split(".")[0]
+        print(filename)
+        if c["group"] == "WT":
+            pos_cols.append(filename)
+        if c["group"] == "KO":
+            neg_cols.append(filename)
+        if c["group"] == "OE" and arg_dic.get("OE") is not None:
+            oe_cols.append(filename)
+    print(pos_cols,neg_cols)
 
-    if not pos_cols or not neg_cols:
-        raise ValueError("Group substrings did not match any columns in the dataframe.")
+    if arg_dic.get("OE") is not None:
+        print("wrong path")
+        return pos_cols, neg_cols, oe_cols
+    else:
+        print("right path")
+        return pos_cols, neg_cols
 
-    overlap = set(pos_cols).intersection(set(neg_cols))
-    if overlap:
-        raise ValueError(f"Ambiguous definitions: Columns {overlap} match both groups.")
-
-    return pos_cols, neg_cols
-
-
-def unique_features(pos_cols, neg_cols,data,config):
+def unique_features(pos_cols, neg_cols, data,config,oe_cols):
 
     if config["unique"]["allow_KO_detection"] == True:
         wt = data[pos_cols].mean(axis=1)
@@ -66,10 +66,18 @@ def known_features(unique_data):
         else:
             print(f"Target mass {i} is not found!")
 
-def main(config,arg_dic):
+def main(config,arg_dic,classified_files):
+    if arg_dic.get("OE") is not None:
+        pos_cols, neg_cols, oe_cols = get_cols(arg_dic,classified_files)
+    else:
+        pos_cols, neg_cols = get_cols(arg_dic,classified_files)
+
+    
     data = pd.read_csv(f"{arg_dic["paths"]["out"]}/consensus_filtered.csv")
-    pos_cols, neg_cols = get_cols(data)
-    unique_data = unique_features(pos_cols, neg_cols,data,config)
+    if arg_dic.get("OE") is not None:
+        unique_data = unique_features(pos_cols,neg_cols,data,config,oe_cols)
+    else:
+        unique_data = unique_features(pos_cols,neg_cols,data,config,oe_cols=None)
 
     unique_data.to_csv(f'{arg_dic["paths"]["out"]}/unique_features.csv', index=False)
 
