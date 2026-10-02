@@ -85,7 +85,6 @@ def print_summary(classified_files):
 
 def main(arg_dic):
     mzml_files = get_mzML_paths(arg_dic)
-    print(arg_dic)
     if len(mzml_files) == 0:
         raise FileNotFoundError(f"No .mzML files found in {arg_dic['paths']['mzml']}")
 
@@ -103,8 +102,6 @@ def main(arg_dic):
         classified_files.append(file_info)
 
     print_summary(classified_files)
-    print("Theese!!!")
-    print(classified_files)
-    print("To here")
+
 
     return classified_files,mzml_files

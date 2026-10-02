@@ -32,70 +32,70 @@ SCI_FORMATTER = ticker.FuncFormatter(_sci_formatter)
 
 GENOTYPE_COLORMAPS = {"WT": cm.Blues, "KO": cm.Reds, "OE": cm.Purples}
 LINESTYLE_CYCLE    = ["solid", "dashed", "dotted", "dashdot"]
+NO_MEDIA = "default"
 
-def build_ordered_samples(classified_files):
-    samples = []
-    genotypes = []
-    media_types = []
+def build_ordered_samples(classified_files, requested_media):
+    plottable = [
+        f for f in classified_files
+        if f.get("group") not in (None, "blank")
+    ]
 
-    for file_info in classified_files:
-        gtype = file_info.get("group")
-        medium = file_info.get("media")
+    if requested_media:
+        found = {f["media"] for f in plottable if f["media"] is not None}
 
-        if gtype is not None and gtype not in genotypes:
-            genotypes.append(gtype)
+        if not found:
+            raise ValueError(
+                f"None of the requested media {requested_media} were found "
+                "in any filename. Check the --media substrings."
+            )
 
-        if medium is not None and medium not in media_types:
-            media_types.append(medium)
+        for m in requested_media:
+            if m not in found:
+                print(f"WARNING: medium '{m}' was requested but matched no files.")
 
-    media_indices = {
-        medium: index
-        for index, medium in enumerate(media_types)
-    }
+        media_types = [m for m in requested_media if m in found]
+
+        for f in plottable:
+            if f["media"] is None:
+                print(f"WARNING: {f['filename']} matched no requested medium and will not be plotted.")
+        plottable = [f for f in plottable if f["media"] is not None]
+    else:
+        media_types = [NO_MEDIA]
 
     linestyles = {
-        medium: LINESTYLE_CYCLE[index % len(LINESTYLE_CYCLE)]
-        for medium, index in media_indices.items()
+        medium: LINESTYLE_CYCLE[i % len(LINESTYLE_CYCLE)]
+        for i, medium in enumerate(media_types)
     }
+    media_indices = {medium: i for i, medium in enumerate(media_types)}
 
-    n = len(classified_files)
-    shade_values = np.linspace(0.40, 0.90, max(n, 1))
+    shade_values = np.linspace(0.40, 0.90, max(len(plottable), 1))
 
-    for i, file_info in enumerate(classified_files):
-        gtype = file_info.get("group")
-        medium = file_info.get("media")
+    samples = []
+    for i, file_info in enumerate(plottable):
+        gtype = file_info["group"]
+        medium = file_info["media"] if requested_media else NO_MEDIA
 
-        if gtype is None or medium is None:
-            continue
-
-        cmap = GENOTYPE_COLORMAPS[gtype]
-
-        sample = {
+        samples.append({
             **file_info,
             "genotype": gtype,
+            "media": medium,
             "media_index": media_indices[medium],
-            "color": cmap(shade_values[i]),
+            "color": GENOTYPE_COLORMAPS[gtype](shade_values[i]),
             "linestyle": linestyles[medium],
-        }
+        })
 
-        samples.append(sample)
-
-    # Assign plotting positions
+    # Vertical positions, with a gap between genotype blocks
     y = 0.0
     current_genotype = None
-
     for sample in samples:
-        if (
-            current_genotype is not None
-            and sample["genotype"] != current_genotype
-        ):
+        if current_genotype is not None and sample["genotype"] != current_genotype:
             y += GENOTYPE_GAP
-
         sample["y_pos"] = y
         y += 1.0
         current_genotype = sample["genotype"]
 
     return samples
+
 
 
 class MS1Cache:
@@ -166,7 +166,9 @@ class WaterfallPipeline:
             raise FileNotFoundError(f"No .mzML files found in {arg_dic['paths']['mzml']}")
 
 
-        self.samples = build_ordered_samples(classified_files)
+        self.samples = build_ordered_samples(classified_files, arg_dic["media"])
+        self.genotypes = list(dict.fromkeys(s["genotype"] for s in self.samples))
+        self.linestyles = {s["media"]: s["linestyle"] for s in self.samples}
         
         if not self.samples:
             raise ValueError(
