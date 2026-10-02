@@ -56,4 +56,4 @@ filter.main(config)
 unique.main(config)
 
 pipe = waterfall.WaterfallPipeline(arg_dic,classified_files)
-pipe.run(arg_dic)
+pipe.run(arg_dic,config)

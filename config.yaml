@@ -9,5 +9,8 @@ preprocessing:
 unique:
   OE_LFC_to_WT: 2
   WT_LFC_to_KO: 6
-  allow_KO_detection: true
+  allow_KO_detection: false
   model_OE_LFC: false
+visual_inspection:
+  RT_window: 120
+  ppm_error: 10

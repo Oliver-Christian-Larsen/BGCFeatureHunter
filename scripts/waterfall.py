@@ -9,14 +9,8 @@ import pyopenms as poms
 import glob
 import os
 
-CSV_FILE_PATH = "./output/unique_features.csv"
-OUTPUT_PDF    = "./output/waterfall.pdf"
-
-PPM_TOLERANCE = 10
-RT_BUFFER_SEC = 120.0
 
 
-# Extra vertical spacing inserted between genotype blocks in the waterfall.
 GENOTYPE_GAP = 2.0
 
 def _sci_formatter(x, pos):
@@ -211,7 +205,7 @@ class WaterfallPipeline:
 
         return handles
 
-    def run(self,arg_dic):
+    def run(self,arg_dic,config):
         features = [(float(rt), float(mz)) for rt, mz in self.df[['rt', 'mz']].itertuples(index=False, name=None)]
         total    = len(features)
         print(f"Processing {total} feature(s)")
@@ -221,8 +215,8 @@ class WaterfallPipeline:
                 print(f"[{idx:>{len(str(total))}}/{total}]  "
                       f"mz={target_mz:.4f}  rt={target_rt:.1f} s")
 
-                rt_min = max(0.0, target_rt - RT_BUFFER_SEC)
-                rt_max = target_rt + RT_BUFFER_SEC
+                rt_min = max(0.0, target_rt - config["visual_inspection"]["RT_window"])
+                rt_max = target_rt + config["visual_inspection"]["RT_window"]
                 
 
                 fig = plt.figure(figsize=(12, 8))
@@ -234,7 +228,7 @@ class WaterfallPipeline:
                         continue
 
                     rt_raw, int_raw = cache.extract_trace(
-                        target_mz, PPM_TOLERANCE, rt_min, rt_max
+                        target_mz, config["visual_inspection"]["ppm_error"], rt_min, rt_max
                     )
 
                     t_min_axis = rt_raw / 60.0
