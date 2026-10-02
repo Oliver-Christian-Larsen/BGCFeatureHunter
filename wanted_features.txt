@@ -1,0 +1,27 @@
+Remove blanks:
+-Subtract blanks from feature table
+
+Adduct detection (requires positive/negative mode):
+-Either label the pdf-page as a suspected adduct
+-or draw the adduct in the same EIC
+
+PCA, as a flag:
+-Make a PCA analysis of the active dataset
+-Draw the scree plot
+
+Mass Defect:
+-Show the mass-defect of unique features (in colour) compared to non-unique features (grey)
+-Use cmap for intensity to identify potential strong results
+
+LFC:
+-Add a LFC flag from the OE to the WT in unique.py
+-Vulcano plots of specified conditions? Points coloured by intensity? Non-significant = grey?
+
+Add support:
+-Add support for mzmine feature table
+
+Resampling:
+-Resample raw .mzML files, to estimate if the feature is a false positive
+
+MS2 support:
+-Add support for FBMM, or other MS2 methods, and draw the molecular netowrks
