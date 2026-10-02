@@ -10,7 +10,7 @@ import argparse
 parser = argparse.ArgumentParser(description='Allow user to specify specific conditions',formatter_class=argparse.ArgumentDefaultsHelpFormatter)
 parser.add_argument('--media', type=str, nargs='+', help='One or more names of the media used. Use substrings, that are present in the mzML filename, eg. PDA.')
 
-parser.add_argument('--blank', type=str, help='The substring used to identify the samples from the blank if used. It will be subtracted, so both injection blanks and media backgrounds are accepted')
+parser.add_argument('--blank', type=str, help='The substring used to identify the samples from the blank if used. It will be subtracted, so both injection blanks and media backgrounds are accepted (currently does nothing)')
 
 parser.add_argument('--wt', type=str, default="WT", help='The substring used to identify the samples from the WT, or background')
 parser.add_argument('--ko', type=str, default="KO", help='The substring used to identify the samples from the deletion mutant')
