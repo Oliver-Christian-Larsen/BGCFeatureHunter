@@ -139,7 +139,7 @@ def main(config,arg_dic,mzML_files):
 
     print(f"Processing {len(mzML_files)} files")
 
-    output_path = os.path.join('./', 'output')
+    output_path = arg_dic["paths"]["out"]
     os.makedirs(output_path, exist_ok=True)
 
     for f_path in mzML_files:

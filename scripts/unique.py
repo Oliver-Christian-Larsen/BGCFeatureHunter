@@ -66,12 +66,12 @@ def known_features(unique_data):
         else:
             print(f"Target mass {i} is not found!")
 
-def main(config):
-    data = pd.read_csv("output/consensus_filtered.csv")
+def main(config,arg_dic):
+    data = pd.read_csv(f"{arg_dic["paths"]["out"]}/consensus_filtered.csv")
     pos_cols, neg_cols = get_cols(data)
     unique_data = unique_features(pos_cols, neg_cols,data,config)
 
-    unique_data.to_csv('./output/unique_features.csv', index=False)
+    unique_data.to_csv(f'{arg_dic["paths"]["out"]}/unique_features.csv', index=False)
 
     #known_features(unique_data)
 

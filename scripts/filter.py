@@ -1,9 +1,8 @@
 import pandas as pd
 import numpy as np
 
-def get_colnames():
-
-    path = "./output/"
+def get_colnames(arg_dic):
+    path = arg_dic["paths"]["out"]
     unfiltered = pd.read_csv(f"{path}/consensus_unfiltered.csv")
 
     active_substrings =  [
@@ -53,12 +52,12 @@ def filter_cols(conditions, unfiltered, min_ratio):
     return filtered_data
 
 
-def main(config):
+def main(config,arg_dic):
     min_ratio = float(config["filter"]["present_ratio"])
 
-    conditions, unfiltered, path = get_colnames()
+    conditions, unfiltered, path = get_colnames(arg_dic)
     filtered_data = filter_cols(conditions,unfiltered,min_ratio)
-    output_filepath = f"{path}consensus_filtered.csv"
+    output_filepath = f"{path}/consensus_filtered.csv"
 
     filtered_data.to_csv(output_filepath, index=False)
     print(f"saved to {output_filepath}")
