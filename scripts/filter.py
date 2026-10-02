@@ -44,4 +44,4 @@ def main(config, arg_dic, classified_files):
     filtered, ratio_matrix = filter_cols(conditions, unfiltered, min_ratio)
 
     filtered.to_csv(f"{path}/consensus_filtered.csv", index=False)
-    print(f"Kept {len(filtered)}/{len(unfiltered)} features")
+    print(f"{len(filtered)}/{len(unfiltered)} features survived the filter")

@@ -174,7 +174,6 @@ class WaterfallPipeline:
 
     def _get_cache(self, filepath):
         if filepath not in self.caches:
-            print(f"Loading spectra: {os.path.basename(filepath)}")
             self.caches[filepath] = MS1Cache(filepath)
         return self.caches[filepath]
 
@@ -202,14 +201,15 @@ class WaterfallPipeline:
         return handles
 
     def run(self,arg_dic,config):
+        print("Hold on, the waterfalls are coming!")
         features = [(float(rt), float(mz)) for rt, mz in self.df[['rt', 'mz']].itertuples(index=False, name=None)]
         total    = len(features)
         print(f"Processing {total} feature(s)")
 
         with PdfPages(self.output_pdf) as pdf:
             for idx, (target_rt, target_mz) in enumerate(features, 1):
-                print(f"[{idx:>{len(str(total))}}/{total}]  "
-                      f"mz={target_mz:.4f}  rt={target_rt:.1f} s")
+                if idx % 20 == 0:
+                    print(f"[{idx:>{len(str(total))}}/{total}]")
 
                 rt_min = max(0.0, target_rt - config["visual_inspection"]["RT_window"])
                 rt_max = target_rt + config["visual_inspection"]["RT_window"]
