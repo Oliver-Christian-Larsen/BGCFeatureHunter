@@ -33,12 +33,6 @@ SCI_FORMATTER = ticker.FuncFormatter(_sci_formatter)
 GENOTYPE_COLORMAPS = {"WT": cm.Blues, "KO": cm.Reds, "OE": cm.Purples}
 LINESTYLE_CYCLE    = ["solid", "dashed", "dotted", "dashdot"]
 
-def build_settings(arg_dic):
-    genotypes = {k: v for k, v in arg_dic["strain"].items() if v}
-    media = {m: m for m in arg_dic["media"]} or {"all": ""}
-    linestyles = {m: LINESTYLE_CYCLE[i % len(LINESTYLE_CYCLE)] for i, m in enumerate(media)}
-    return genotypes, media, linestyles
-
 def classify_files(all_mzml_files, genotypes, media_subs, blank=None):
     classified = {g: {m: [] for m in media_subs} for g in genotypes}
     unmatched = []
@@ -58,43 +52,77 @@ def classify_files(all_mzml_files, genotypes, media_subs, blank=None):
         print(f"[Warning] {len(unmatched)} file(s) could not be classified "
               f"(no matching genotype+media substring): {unmatched}")
 
+    print("Waterfall here!")
+    print(classified)
+    print("to here")
+
     return classified
 
 
-def build_ordered_samples(classified, genotypes, media_subs, linestyles):
+def build_ordered_samples(classified_files):
     samples = []
+    genotypes = []
+    media_types = []
 
-    for genotype in genotypes:
-        cmap = GENOTYPE_COLORMAPS[genotype]
+    for file_info in classified_files:
+        gtype = file_info.get("group")
+        medium = file_info.get("media")
 
-        files_for_genotype = []
-        for media in media_subs:
-            for fp in sorted(classified[genotype][media]):
-                files_for_genotype.append((fp, media))
+        if gtype is not None and gtype not in genotypes:
+            genotypes.append(gtype)
 
-        n = len(files_for_genotype)
-        shade_values = np.linspace(0.40, 0.90, max(n, 1))
+        if medium is not None and medium not in media_types:
+            media_types.append(medium)
 
-        for i, (fp, media) in enumerate(files_for_genotype):
-            samples.append({
-                "filepath":  fp,
-                "label":     os.path.basename(fp),
-                "genotype":  genotype,
-                "media":     media,
-                "color":     cmap(shade_values[i]),
-                "linestyle": linestyles[media],
-            })
+    media_indices = {
+        medium: index
+        for index, medium in enumerate(media_types)
+    }
 
+    linestyles = {
+        medium: LINESTYLE_CYCLE[index % len(LINESTYLE_CYCLE)]
+        for medium, index in media_indices.items()
+    }
+
+    n = len(classified_files)
+    shade_values = np.linspace(0.40, 0.90, max(n, 1))
+
+    for i, file_info in enumerate(classified_files):
+        gtype = file_info.get("group")
+        medium = file_info.get("media")
+
+        if gtype is None or medium is None:
+            continue
+
+        cmap = GENOTYPE_COLORMAPS[gtype]
+
+        sample = {
+            **file_info,
+            "genotype": gtype,
+            "media_index": media_indices[medium],
+            "color": cmap(shade_values[i]),
+            "linestyle": linestyles[medium],
+        }
+
+        samples.append(sample)
+
+    # Assign plotting positions
     y = 0.0
-    current_geno = None
-    for s in samples:
-        if current_geno is not None and s["genotype"] != current_geno:
+    current_genotype = None
+
+    for sample in samples:
+        if (
+            current_genotype is not None
+            and sample["genotype"] != current_genotype
+        ):
             y += GENOTYPE_GAP
-        s["y_pos"] = y
+
+        sample["y_pos"] = y
         y += 1.0
-        current_geno = s["genotype"]
+        current_genotype = sample["genotype"]
 
     return samples
+
 
 class MS1Cache:
     def __init__(self, filepath):
@@ -149,7 +177,7 @@ class MS1Cache:
         return np.array(xic_rt), np.array(xic_int)
 
 class WaterfallPipeline:
-    def __init__(self,arg_dic):
+    def __init__(self,arg_dic,classified_files):
         self.output_pdf = os.path.join(arg_dic["paths"]["out"], "waterfall.pdf")
         if not os.path.exists(f"{arg_dic['paths']['out']}/unique_features.csv"):
             raise FileNotFoundError(f"Unique Feature CSV not found: {f"{arg_dic['paths']['out']}/unique_features.csv"}")
@@ -165,9 +193,9 @@ class WaterfallPipeline:
 
 
 
-        self.genotypes, self.media, self.linestyles = build_settings(arg_dic)
-        classified = classify_files(all_files, self.genotypes, self.media, arg_dic["blank"])
-        self.samples = build_ordered_samples(classified, self.genotypes, self.media, self.linestyles)
+       # self.genotypes, self.media, self.linestyles = build_settings(arg_dic)
+        #classified = classify_files(all_files, self.genotypes, self.media, arg_dic["blank"])
+        self.samples = build_ordered_samples(classified_files)
         
         if not self.samples:
             raise ValueError(
@@ -177,7 +205,7 @@ class WaterfallPipeline:
 
         print(f"Classified {len(self.samples)} file(s):")
         for s in self.samples:
-            print(f"[genotype={s['genotype']:8s}  media={s['media']:8s}]  {s['label']}")
+            print(f"[genotype={s['genotype']:8s}  media={s['media']:8s}]  {s['filename']}")
 
         self.caches = {}
 

@@ -2,10 +2,8 @@ import pandas as pd
 import numpy as np
 
 def get_cols(data):
-
     data_cols = data.iloc[:, 3:]
     positive_groups = [
-
     "WT_Y",
     "WT_P",
 ]

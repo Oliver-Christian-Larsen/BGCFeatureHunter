@@ -15,7 +15,7 @@ def get_mzML_paths(arg_dic):
 def find_matches(filename, substrings):
 
     matches = []
-    filename_lower = filename.lower()  # so "wt" and "WT" both match
+    filename_lower = filename.lower()
 
     for label, substring in substrings.items():
         if substring is None:
@@ -59,7 +59,7 @@ def classify_one_file(file_path, group_substrings, media_substrings):
         media = None
 
     return {
-        "path": file_path,
+        "filepath": file_path,
         "filename": filename,
         "group": group,
         "media": media,
@@ -78,21 +78,21 @@ def print_summary(classified_files):
             unclassified.append(info["filename"])
 
     if unclassified:
-        print("\nWARNING: these files matched no group and will be ignored:")
+        print("\nWARNING: these files matched no group. They will be preprocessed, but not used in subsequent analysis:")
         for name in unclassified:
             print(f"  {name}")
 
 
 def main(arg_dic):
     mzml_files = get_mzML_paths(arg_dic)
-
+    print(arg_dic)
     if len(mzml_files) == 0:
         raise FileNotFoundError(f"No .mzML files found in {arg_dic['paths']['mzml']}")
 
     group_substrings = {
-        "wt": arg_dic["strain"]["wt"],
-        "ko": arg_dic["strain"]["ko"],
-        "oe": arg_dic["strain"]["oe"],
+        "WT": arg_dic["strain"]["WT"],
+        "KO": arg_dic["strain"]["KO"],
+        "OE": arg_dic["strain"]["OE"],
         "blank": arg_dic["blank"],
     }
     media_substrings = arg_dic["media"]
@@ -103,5 +103,8 @@ def main(arg_dic):
         classified_files.append(file_info)
 
     print_summary(classified_files)
+    print("Theese!!!")
+    print(classified_files)
+    print("To here")
 
     return classified_files,mzml_files
