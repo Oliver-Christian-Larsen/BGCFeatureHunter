@@ -1,10 +1,10 @@
 filter:
-  present_ratio: 0.6
+  present_ratio: 0.8
 preprocessing:
   mass_trace_ppm: 8
   max_ppm_diff_combine_features: 10
   max_rt_diff_combine_features: 40
-  noise_threshold: 5000
+  noise_threshold: 10000
   remove_single_traces: 'false'
 unique:
   OE_LFC_to_WT: 2

@@ -14,13 +14,14 @@ def plot(unique_df,filtered_df,arg_dic):
      
     dec_filt, num_filt = np.modf(filtered_data)
     fig, ax = plt.subplots(figsize=(6, 5))
+
     
     ax.scatter(
         dec_unique,
         num_unique,
         c=unique_data_int_log2,
-        alpha=0.5,
-        s=5,
+        alpha=0.6,
+        s=7,
         cmap="viridis",
     )
 
