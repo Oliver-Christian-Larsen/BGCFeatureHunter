@@ -1,5 +1,7 @@
 import os
 import glob
+from collections import defaultdict
+
 
 
 def get_mzML_paths(arg_dic):
@@ -78,6 +80,29 @@ def print_summary(classified_files):
         for name in unclassified:
             print(f"{name}")
 
+
+def get_conditions(classified_files, mzml_files):
+    mzml_files_no_ext = []
+    for f in mzml_files:
+        fname = os.path.basename(f)
+        mzml_files_no_ext.append(fname.split(".")[0])
+
+    conditions = defaultdict(list)
+
+    for info in classified_files:
+        group = info["group"]
+        if group is None or group == "blank":
+            continue
+
+        col = info["filename"].replace(".mzML", "")
+        if col not in mzml_files_no_ext:
+            print(f"WARNING: no column '{col}' in consensus table, skipping")
+            continue
+
+        conditions[(group, info["media"])].append(col)
+
+    return dict(conditions)
+
 def main(arg_dic):
     mzml_files = get_mzML_paths(arg_dic)
     if len(mzml_files) == 0:
@@ -96,5 +121,11 @@ def main(arg_dic):
         file_info = classify_one_file(file_path, group_substrings, media_substrings)
         classified_files.append(file_info)
 
+    conditions = get_conditions(classified_files, mzml_files)
+
     print_summary(classified_files)
-    return classified_files,mzml_files
+    return classified_files,mzml_files,conditions
+
+
+
+

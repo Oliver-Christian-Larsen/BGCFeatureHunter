@@ -1,25 +1,7 @@
 import pandas as pd
-from collections import defaultdict
 from pathlib import Path
+from collections import defaultdict
 
-
-def get_conditions(classified_files, columns):
-    available = set(columns)
-    conditions = defaultdict(list)
-
-    for info in classified_files:
-        group = info["group"]
-        if group is None or group == "blank":
-            continue
-
-        col = info["filename"].replace(".mzML", "")
-        if col not in available:
-            print(f"WARNING: no column '{col}' in consensus table, skipping")
-            continue
-
-        conditions[(group, info["media"])].append(col)
-
-    return dict(conditions)
 
 def filter_cols(conditions, unfiltered, min_ratio):
     data_cols = unfiltered.iloc[:, 4:]
@@ -34,14 +16,15 @@ def filter_cols(conditions, unfiltered, min_ratio):
     return unfiltered[keep_rows].copy(), ratio_matrix
 
 
-def main(config, arg_dic, classified_files):
+def main(config, arg_dic, classified_files,conditions):
     path = arg_dic["paths"]["out"]
     unfiltered = pd.read_csv(f"{path}/consensus_unfiltered.csv")
     min_ratio = float(config["filter"]["present_ratio"])
 
-    conditions = get_conditions(classified_files, unfiltered.columns[4:])
 
     filtered, ratio_matrix = filter_cols(conditions, unfiltered, min_ratio)
 
     filtered.to_csv(f"{path}/consensus_filtered.csv", index=False)
     print(f"{len(filtered)}/{len(unfiltered)} features survived the filter")
+
+    return conditions
