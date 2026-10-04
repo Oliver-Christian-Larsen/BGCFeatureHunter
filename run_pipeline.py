@@ -4,6 +4,7 @@ from scripts import filter_features
 from scripts import unique
 from scripts import waterfall
 from scripts import PCA
+from scripts import mass_deficit
 
 import yaml
 import argparse
@@ -50,7 +51,7 @@ classified_files,mzml_files,conditions = classify_files.main(arg_dic)
 with open('config.yaml', 'r') as file:
     config = yaml.safe_load(file)
 
-pp.main(config,arg_dic,mzml_files)
+#pp.main(config,arg_dic,mzml_files)
 filter_features.main(config,arg_dic,classified_files,conditions)
 
 PCA.main(arg_dic,conditions)
@@ -59,7 +60,7 @@ PCA.main(arg_dic,conditions)
 
 unique.main(config,arg_dic,classified_files)
 
-
+mass_deficit.main(arg_dic)
 
 pipe = waterfall.WaterfallPipeline(arg_dic,classified_files)
 pipe.run(arg_dic,config)
