@@ -42,3 +42,5 @@ def main(arg_dic):
     filtered_df = pd.read_csv(f"{arg_dic["paths"]["out"]}/consensus_filtered.csv")
     plot(unique_df,filtered_df,arg_dic)
 
+if __name__ == "__main__":
+    main()

@@ -164,3 +164,6 @@ def pca(filtered_df, conditions, arg_dic):
 def main(arg_dic, conditions):
     filtered_df = load_data(arg_dic)
     pca(filtered_df, conditions, arg_dic)
+
+if __name__ == "__main__":
+    main()
