@@ -128,4 +128,6 @@ def main(arg_dic):
 
 
 
+if __name__ == "__main__":
+    main()
 

@@ -45,3 +45,7 @@ def main(arg_dic,classified_files):
         print(f)
     f_df = load_data(arg_dic)
     print(f_df.head())
+
+
+if __name__ == "__main__":
+    main()

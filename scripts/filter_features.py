@@ -27,4 +27,7 @@ def main(config, arg_dic, classified_files,conditions):
     filtered.to_csv(f"{path}/consensus_filtered.csv", index=False)
     print(f"{len(filtered)}/{len(unfiltered)} features survived the filter")
 
-    return conditions
+
+
+if __name__ == "__main__":
+    main()
