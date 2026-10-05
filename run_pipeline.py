@@ -1,18 +1,3 @@
-print("Loading relevant libraies")
-from scripts import classify_files
-from scripts import preprocessing as pp
-from scripts import filter_features
-from scripts import unique
-from scripts import waterfall
-from scripts import PCA
-from scripts import mass_deficit
-from scripts import FDR
-
-import yaml
-import argparse
-
-print("Loaded libraries, running pipeline!")
-
 parser = argparse.ArgumentParser(description='Allow user to specify specific conditions',formatter_class=argparse.ArgumentDefaultsHelpFormatter)
 parser.add_argument('--media', type=str, nargs='+', help='One or more names of the media used. Use substrings, that are present in the mzML filename, eg. PDA.')
 
@@ -54,6 +39,23 @@ arg_dic = {
         "out" : args.out,
     }
 }
+
+
+print("Loading relevant libraies")
+from scripts import classify_files
+from scripts import preprocessing as pp
+from scripts import filter_features
+from scripts import unique
+from scripts import waterfall
+from scripts import PCA
+from scripts import mass_deficit
+from scripts import FDR
+
+import yaml
+import argparse
+
+print("Loaded libraries, running pipeline!")
+
 
 classified_files,mzml_files,conditions = classify_files.main(arg_dic)
 
