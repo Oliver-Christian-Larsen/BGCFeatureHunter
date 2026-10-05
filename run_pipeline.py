@@ -1,3 +1,5 @@
+import argparse
+
 parser = argparse.ArgumentParser(description='Allow user to specify specific conditions',formatter_class=argparse.ArgumentDefaultsHelpFormatter)
 parser.add_argument('--media', type=str, nargs='+', help='One or more names of the media used. Use substrings, that are present in the mzML filename, eg. PDA.')
 
@@ -52,7 +54,6 @@ from scripts import mass_deficit
 from scripts import FDR
 
 import yaml
-import argparse
 
 print("Loaded libraries, running pipeline!")
 
