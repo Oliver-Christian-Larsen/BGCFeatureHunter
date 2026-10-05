@@ -1,3 +1,10 @@
+adduct_settings:
+  adduct_ppm_diff: 10
+  adduct_rt_diff: 5
+adducts:
+  -H2O: -18.01056
+  K+: 37.95588
+  Na+: 21.98194
 fdr:
   keep_complement: false
   min_distance: 1

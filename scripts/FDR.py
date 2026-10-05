@@ -200,7 +200,7 @@ def plot_boxplot(null_by_sweep, summary, arg_dic, path):
     ax2.set_xticklabels(labels, rotation=30 if len(labels) > 3 else 0, ha="right" if len(labels) > 3 else "center")
 
     fig.tight_layout()
-    fig.savefig(path, dpi=200)
+    fig.savefig(path, dpi=300)
     plt.close(fig)
 
 

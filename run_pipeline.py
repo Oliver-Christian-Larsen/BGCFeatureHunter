@@ -16,7 +16,7 @@ parser.add_argument('--oe-display', type=str, default="OE", help='The showname i
 parser.add_argument('--mzml', type=str, default= "./data", help='The filepath to the calibrated centroided .mzML files')
 parser.add_argument('--out', type=str,  default= "./output", help='The output filepath')
 
-
+parser.add_argument('--adducts', action='store_true', help='Detect adducts. Only runs on the features in the unique features list')
 parser.add_argument('--fdr', action='store_true', help='Run the FDR permutation test after the pipeline (settings in config.yaml)')
 parser.add_argument('--fdr-only', action='store_true', help='Only run the FDR permutation test, using an existing consensus_unfiltered.csv in --out')
 
@@ -52,7 +52,7 @@ from scripts import waterfall
 from scripts import PCA
 from scripts import mass_deficit
 from scripts import FDR
-
+from scripts import adduct_detection
 import yaml
 
 print("Loaded libraries, running pipeline!")
@@ -63,7 +63,7 @@ classified_files,mzml_files,conditions = classify_files.main(arg_dic)
 with open('config.yaml', 'r') as file:
     config = yaml.safe_load(file)
 
-pp.main(config,arg_dic,mzml_files)
+#pp.main(config,arg_dic,mzml_files)
 filter_features.main(config,arg_dic,classified_files,conditions)
 
 PCA.main(arg_dic,conditions)
@@ -74,6 +74,8 @@ if args.fdr:
     FDR.main(config, arg_dic, conditions)
 
 mass_deficit.main(arg_dic)
+if args.adducts:
+    adduct_detection.main(config,arg_dic)
 
 pipe = waterfall.WaterfallPipeline(arg_dic,classified_files)
 pipe.run(arg_dic,config)
