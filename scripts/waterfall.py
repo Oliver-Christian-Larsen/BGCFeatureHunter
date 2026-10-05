@@ -243,25 +243,31 @@ class WaterfallPipeline:
                 ax.set_zlabel("Intensity", labelpad=15, fontweight='bold')
                 ax.set_yticks([])
 
-                parent_id = self.df.loc[idx - 1, "adduct_parent_id"]
+                try:
+                    parent_id = self.df.loc[idx - 1, "adduct_parent_id"]
 
-                if pd.notna(parent_id) and str(parent_id).strip() != "":
-                    adduct = self.df["adduct"].loc[idx - 1]
-                    if adduct == "-H2O":
-                        ax.set_title(
-                            f"m/z {target_mz:.4f}   |   RT {target_rt / 60:.2f} min \n Likely a waterloss",
-                            fontweight='bold', pad=20,
-                        )            
+                    if pd.notna(parent_id) and str(parent_id).strip() != "":
+                        adduct = self.df["adduct"].loc[idx - 1]
+                        if adduct == "-H2O":
+                            ax.set_title(
+                                f"m/z {target_mz:.4f}   |   RT {target_rt / 60:.2f} min \n Likely a waterloss",
+                                fontweight='bold', pad=20,
+                            )            
+                        else:
+                            ax.set_title(
+                                f"m/z {target_mz:.4f}   |   RT {target_rt / 60:.2f} min \n likely {adduct} adduct",
+                                fontweight='bold', pad=20,
+                            )
                     else:
                         ax.set_title(
-                            f"m/z {target_mz:.4f}   |   RT {target_rt / 60:.2f} min \n likely {adduct} adduct",
-                            fontweight='bold', pad=20,
-                        )
-                else:
-                    ax.set_title(
-                    f"m/z {target_mz:.4f}   |   RT {target_rt / 60:.2f} min \n This is probably not an adduct or waterloss \n",
-                    fontweight='bold', pad=20,
-                )
+                        f"m/z {target_mz:.4f}   |   RT {target_rt / 60:.2f} min \n This is probably not an adduct or waterloss \n",
+                        fontweight='bold', pad=20,
+                    )
+                except:
+                        ax.set_title(
+                        f"m/z {target_mz:.4f}   |   RT {target_rt / 60:.2f} min",
+                        fontweight='bold', pad=20,
+                    )
 
                 ax.legend(
                     handles       = self._legend_handles(arg_dic),
