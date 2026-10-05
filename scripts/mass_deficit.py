@@ -34,7 +34,7 @@ def plot(unique_df,filtered_df,arg_dic):
     )
     ax.set_title("Mass Defect plot of unique and filtered features")
     ax.set_ylabel("Decimal part")
-    ax.set_xlabel("Intiger part")
+    ax.set_xlabel("Integer part")
     cbar = plt.colorbar(sc)
     cbar.set_label("Log2(intensity + 1) of unique features")
     plt.savefig(f"{arg_dic["paths"]["out"]}/mass_defect.png",dpi=300)
