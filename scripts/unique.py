@@ -13,7 +13,7 @@ def get_cols(arg_dic,classified_files):
             pos_cols.append(filename)
         if c["group"] == "KO":
             neg_cols.append(filename)
-        if c["group"] == "OE" and arg_dic.get("OE") is not None:
+        if c["group"] == "OE" and arg_dic["strain"].get("OE") is not None:
             oe_cols.append(filename)
 
     if arg_dic["strain"].get("OE") is not None:
