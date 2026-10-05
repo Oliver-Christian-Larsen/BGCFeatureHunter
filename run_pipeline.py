@@ -18,7 +18,6 @@ parser.add_argument('--out', type=str,  default= "./output", help='The output fi
 
 parser.add_argument('--adducts', action='store_true', help='Detect adducts. Only runs on the features in the unique features list')
 parser.add_argument('--fdr', action='store_true', help='Run the FDR permutation test after the pipeline (settings in config.yaml)')
-parser.add_argument('--fdr-only', action='store_true', help='Only run the FDR permutation test, using an existing consensus_unfiltered.csv in --out')
 
 
 args = parser.parse_args()

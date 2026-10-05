@@ -17,7 +17,9 @@ def load_data(arg_dic):
         inplace=True
     )
 
-    return filtered_df
+    filtered_log2_df = np.log2(filtered_df + 1).copy()
+
+    return filtered_log2_df
 
 
 def pca(filtered_df, conditions, arg_dic):
