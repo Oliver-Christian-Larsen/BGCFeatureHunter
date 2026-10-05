@@ -1,5 +1,15 @@
+fdr:
+  keep_complement: false
+  min_distance: 1
+  n_permutations: 1000
+  seed: 42
+  sweep:
+    filter.present_ratio:
+    - 0.5
+    - 0.8
+    - 1.0
 filter:
-  present_ratio: 0.8
+  present_ratio: 0.6
 preprocessing:
   mass_trace_ppm: 8
   max_ppm_diff_combine_features: 10
