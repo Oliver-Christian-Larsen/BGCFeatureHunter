@@ -148,6 +148,7 @@ class WaterfallPipeline:
 
         self.df = pd.read_csv(f"{arg_dic['paths']['out']}/unique_features.csv")
 
+
         if self.df.empty:
             raise ValueError("Feature CSV is empty.")
 
@@ -199,7 +200,7 @@ class WaterfallPipeline:
     def run(self,arg_dic,config):
         print("Hold on, the waterfalls are coming!")
         features = [(float(rt), float(mz)) for rt, mz in self.df[['rt', 'mz']].itertuples(index=False, name=None)]
-        total    = len(features)
+        total = len(features)
         print(f"Processing {total} feature(s)")
 
         with PdfPages(self.output_pdf) as pdf:
@@ -242,8 +243,23 @@ class WaterfallPipeline:
                 ax.set_zlabel("Intensity", labelpad=15, fontweight='bold')
                 ax.set_yticks([])
 
-                ax.set_title(
-                    f"m/z {target_mz:.4f}   |   RT {target_rt / 60:.2f} min",
+                parent_id = self.df.loc[idx - 1, "adduct_parent_id"]
+
+                if pd.notna(parent_id) and str(parent_id).strip() != "":
+                    adduct = self.df["adduct"].loc[idx - 1]
+                    if adduct == "-H2O":
+                        ax.set_title(
+                            f"m/z {target_mz:.4f}   |   RT {target_rt / 60:.2f} min \n Likely a waterloss",
+                            fontweight='bold', pad=20,
+                        )            
+                    else:
+                        ax.set_title(
+                            f"m/z {target_mz:.4f}   |   RT {target_rt / 60:.2f} min \n likely {adduct} adduct",
+                            fontweight='bold', pad=20,
+                        )
+                else:
+                    ax.set_title(
+                    f"m/z {target_mz:.4f}   |   RT {target_rt / 60:.2f} min \n This is probably not an adduct or waterloss \n",
                     fontweight='bold', pad=20,
                 )
 
