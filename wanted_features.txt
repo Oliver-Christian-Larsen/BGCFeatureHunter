@@ -5,13 +5,6 @@ Adduct detection (requires positive/negative mode):
 -Either label the pdf-page as a suspected adduct
 -or draw the adduct in the same EIC
 
-PCA, as a flag:
--Make a PCA analysis of the active dataset
--Draw the scree plot
-
-Mass Defect:
--Show the mass-defect of unique features (in colour) compared to non-unique features (grey)
--Use cmap for intensity to identify potential strong results
 
 LFC:
 -Add a LFC flag from the OE to the WT in unique.py
@@ -26,5 +19,3 @@ Resampling:
 MS2 support:
 -Add support for FBMM, or other MS2 methods, and draw the molecular netowrks
 
-Probability
--Implement a scoring, where the coloumns are shuffled, and unique features are detected. Will give an estimate of how clean the dataset is
