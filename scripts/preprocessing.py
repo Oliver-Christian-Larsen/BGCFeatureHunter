@@ -20,13 +20,10 @@ def detect_elution_peaks(mass_traces):
     epd = oms.ElutionPeakDetection()
     epd_params = epd.getDefaults()
     epd.setLogType(oms.LogType.NONE)
-    epd_params.setValue("width_filtering", "fixed") 
+    epd.getParameters().getValue("width_filtering") == "auto"
     epd.setParameters(epd_params)
     epd.detectPeaks(mass_traces, mass_traces_split)
-    if epd.getParameters().getValue("width_filtering") == "auto":
-        epd.filterByPeakWidth(mass_traces_split, mass_traces_final)
-    else:
-        mass_traces_final = mass_traces_split
+
     return mass_traces_final
 
 
