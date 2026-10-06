@@ -16,7 +16,7 @@ fdr:
     - 0.8
     - 1.0
 filter:
-  present_ratio: 0.6
+  present_ratio: 0.8
 preprocessing:
   mass_trace_ppm: 8
   max_ppm_diff_combine_features: 10

@@ -135,7 +135,6 @@ def summarize(label, real_ids, null_counts, feature_counter):
 
     null_median = float(np.median(null))
     est_fdr = null_median / real if real > 0 else np.nan
-    p_value = (1 + int((null >= real).sum())) / (1 + len(null))
     real_seen_in_null = sum(1 for i in real_ids if feature_counter[i] > 0)
 
     return {
@@ -147,7 +146,6 @@ def summarize(label, real_ids, null_counts, feature_counter):
         "null_q95": float(np.quantile(null, 0.95)),
         "null_max": int(null.max()),
         "est_FDR": est_fdr,
-        "empirical_p": p_value,
         "real_hits_seen_in_null": real_seen_in_null,
     }
 
