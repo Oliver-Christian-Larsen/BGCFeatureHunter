@@ -33,9 +33,7 @@ The settings file is then 'src/bgcfeaturehunter/config.yaml'.
 
 Put your '.mzML' files in one folder. The group and medium options are case-insensitive **substrings of the filenames**, so make sure they identify your files unambiguously.
 
-'''bash
 bgcfeaturehunter --mzml ./data --out ./output --wt WT --ko Delta
-'''
 
 Useful extras: '--media PDA YES', '--adducts', '--fdr', '--elemental', '--no_pdf'. Run 'bgcfeaturehunter --help' for all options.
 
