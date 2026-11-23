@@ -14,11 +14,11 @@ Briefly, the workflow is as following:
 
 Requires Python 3.12 or 3.13.
 
+Recommended install in a conda environment:
+conda create -n bgcfeaturehunter python=3.13 pip
 
 pip install git+https://github.com/Oliver-Christian-Larsen/BGCFeatureHunter
 bgcfeaturehunter --help
-
-
 To edit the code or settings, install from a clone instead:
 
 
