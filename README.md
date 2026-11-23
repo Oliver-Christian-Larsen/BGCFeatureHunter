@@ -15,10 +15,18 @@ Briefly, the workflow is as following:
 Requires Python 3.12 or 3.13.
 
 Recommended install in a conda environment:
+
+Create env:
 conda create -n bgcfeaturehunter python=3.13 pip
 
+Install:
 pip install git+https://github.com/Oliver-Christian-Larsen/BGCFeatureHunter
+
+Inspect settings:
 bgcfeaturehunter --help
+
+
+
 To edit the code or settings, install from a clone instead:
 
 
@@ -34,6 +42,7 @@ The settings file is then 'src/bgcfeaturehunter/config.yaml'.
 Put your '.mzML' files in one folder. The group and medium options are case-insensitive **substrings of the filenames**, so make sure they identify your files unambiguously.
 
 bgcfeaturehunter --mzml ./data --out ./output --wt WT --ko Delta
+The single traces molecular formula does nothing currently.
 
 Useful extras: '--media PDA YES', '--adducts', '--fdr', '--elemental', '--no_pdf'. Run 'bgcfeaturehunter --help' for all options.
 
