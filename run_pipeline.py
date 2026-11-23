@@ -1,4 +1,5 @@
 import argparse
+import os
 
 parser = argparse.ArgumentParser(description='Allow user to specify specific conditions',formatter_class=argparse.ArgumentDefaultsHelpFormatter)
 parser.add_argument('--media', type=str, nargs='+', help='One or more names of the media used. Use substrings, that are present in the mzML filename, eg. PDA.')
@@ -16,11 +17,23 @@ parser.add_argument('--oe-display', type=str, default="OE", help='The showname i
 parser.add_argument('--mzml', type=str, default= "./data", help='The filepath to the calibrated centroided .mzML files')
 parser.add_argument('--out', type=str,  default= "./output", help='The output filepath')
 
+parser.add_argument('--no_pdf', action='store_true', help='Flag to disable the production of the waterfall pdf')
 parser.add_argument('--adducts', action='store_true', help='Detect adducts. Only runs on the features in the unique features list')
 parser.add_argument('--fdr', action='store_true', help='Run the FDR permutation test after the pipeline (settings in config.yaml)')
 
+parser.add_argument('--elemental', action='store_true', help='If you want molecular formula calculation. By default, only runs if a feature has 1 > detected ions')
+parser.add_argument('--elemental_single', action='store_true', help='If you want molecular formula calculation for single ions. Only runs if --elemental is used')
+
+parser.add_argument('--elemental_feature_file', type=str, default=None, help='The feature file you want to calculate molecular formulas for. Defaults to <out>/unique_features.csv')
 
 args = parser.parse_args()
+
+if args.elemental_feature_file is None:
+    args.elemental_feature_file = os.path.join(args.out, "unique_features.csv")
+
+
+if args.elemental_feature_file and not args.elemental:
+    parser.error("--elemental_feature_file requires --elemental")
 
 arg_dic = {
     "strain" : {
@@ -38,7 +51,9 @@ arg_dic = {
     "paths" : {
         "mzml" : args.mzml,
         "out" : args.out,
-    }
+        "elemental_featurefile" : args.elemental_feature_file,
+    },
+    "elemental_single" : args.elemental_single
 }
 
 
@@ -52,6 +67,8 @@ from scripts import PCA
 from scripts import mass_deficit
 from scripts import FDR
 from scripts import adduct_detection
+from elemental import calculate_MF
+from elemental import get_relative_intensities
 import yaml
 
 print("Loaded libraries, running pipeline!")
@@ -76,6 +93,13 @@ mass_deficit.main(arg_dic)
 if args.adducts:
     adduct_detection.main(config,arg_dic)
 
-pipe = waterfall.WaterfallPipeline(arg_dic,classified_files)
-pipe.run(arg_dic,config)
+if args.elemental:
+    ratio_data = get_relative_intensities.main(arg_dic)
+    calculate_MF.main(ratio_data,arg_dic)
+
+if args.no_pdf == True:
+    print("Job done! No visualization rendered")
+else:
+    pipe = waterfall.WaterfallPipeline(arg_dic,classified_files)
+    pipe.run(arg_dic,config)
 
