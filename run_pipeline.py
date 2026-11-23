@@ -28,12 +28,15 @@ parser.add_argument('--elemental_feature_file', type=str, default=None, help='Th
 
 args = parser.parse_args()
 
+
+if args.elemental_feature_file is not None and not args.elemental:
+    parser.error("--elemental_feature_file requires --elemental")
+
 if args.elemental_feature_file is None:
     args.elemental_feature_file = os.path.join(args.out, "unique_features.csv")
 
 
-if args.elemental_feature_file and not args.elemental:
-    parser.error("--elemental_feature_file requires --elemental")
+
 
 arg_dic = {
     "strain" : {
