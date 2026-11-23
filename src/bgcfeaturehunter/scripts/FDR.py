@@ -8,8 +8,8 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 
-from scripts import filter_features
-from scripts import unique
+from bgcfeaturehunter.scripts import filter_features
+from bgcfeaturehunter.scripts import unique
 
 
 def load_data(arg_dic, conditions):
