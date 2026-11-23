@@ -1,0 +1,29 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "bgcfeaturehunter"
+version = "0.1.0"
+description = "PyOpenMS-based pipeline for detecting candidate BGC-derived features in LC-MS data"
+readme = "README.md"
+license = {file = "LICENSE"}
+requires-python = ">=3.11"
+dependencies = [
+    "numpy>=2.0",
+    "pandas>=2.2",
+    "matplotlib>=3.8",
+    "pyopenms==3.5.0",
+    "scikit-learn>=1.4",
+    "pyyaml>=6.0",
+    "find-mfs==0.4.0",
+]
+
+[project.scripts]
+bgcfeaturehunter = "bgcfeaturehunter.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+bgcfeaturehunter = ["config.yaml"]

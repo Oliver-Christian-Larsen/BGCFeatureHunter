@@ -1,9 +1,11 @@
 data/*
-
 my_data/*
-
 output/*
 
-scripts/__pycache__*
-
 create_yaml.py
+
+__pycache__/
+*.pyc
+dist/
+build/
+*.egg-info/
