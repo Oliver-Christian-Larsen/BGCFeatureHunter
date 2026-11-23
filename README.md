@@ -39,4 +39,4 @@ Useful extras: '--media PDA YES', '--adducts', '--fdr', '--elemental', '--no_pdf
 
 Results are written to the output folder, including 'unique_features.csv' and 'waterfall.pdf'.
 
-Feel free to reach out.
+Feel free to reach out @ ocl@bio.aau.dk.
