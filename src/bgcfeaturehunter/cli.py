@@ -112,8 +112,17 @@ def main():
     if args.no_pdf == True:
         print("Job done! No visualization rendered")
     else:
-        pipe = waterfall.WaterfallPipeline(arg_dic,classified_files)
-        pipe.run(arg_dic,config)
+        unique_csv = os.path.join(args.out, "unique_features.csv")
+        with open(unique_csv) as fh:
+            n_unique = sum(1 for _ in fh) - 1
+        if n_unique == 0:
+            print("No unique features found, so no waterfall PDF was made. "
+                  "Consider lowering filter.present_ratio or setting "
+                  "unique.allow_KO_detection: true in the config."
+                  "Alternatively, lower the noise threshold.")
+        else:
+            pipe = waterfall.WaterfallPipeline(arg_dic, classified_files)
+            pipe.run(arg_dic, config)
     
 if __name__ == "__main__":
     main()

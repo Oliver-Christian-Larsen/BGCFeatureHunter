@@ -1,6 +1,6 @@
 import pandas as pd
 import numpy as np
-
+import os
 
 def get_cols(arg_dic,classified_files):
     pos_cols = []
@@ -8,7 +8,7 @@ def get_cols(arg_dic,classified_files):
     if arg_dic["strain"].get("OE") is not None:
         oe_cols = []
     for c in classified_files:
-        filename = c["filename"].split(".")[0]
+        filename = os.path.splitext(c["filename"])[0]
         if c["group"] == "WT":
             pos_cols.append(filename)
         if c["group"] == "KO":

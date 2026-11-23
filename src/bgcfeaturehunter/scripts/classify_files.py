@@ -85,7 +85,7 @@ def get_conditions(classified_files, mzml_files):
     mzml_files_no_ext = []
     for f in mzml_files:
         fname = os.path.basename(f)
-        mzml_files_no_ext.append(fname.split(".")[0])
+        mzml_files_no_ext.append(os.path.splitext(fname)[0])
 
     conditions = defaultdict(list)
 
@@ -94,7 +94,7 @@ def get_conditions(classified_files, mzml_files):
         if group is None or group == "blank":
             continue
 
-        col = info["filename"].replace(".mzML", "")
+        col = os.path.splitext(info["filename"])[0]
         if col not in mzml_files_no_ext:
             print(f"WARNING: no column '{col}' in consensus table, skipping")
             continue
@@ -102,6 +102,30 @@ def get_conditions(classified_files, mzml_files):
         conditions[(group, info["media"])].append(col)
 
     return dict(conditions)
+
+def check_groups(classified_files, arg_dic):
+    counts = {}
+    for info in classified_files:
+        counts[info["group"]] = counts.get(info["group"], 0) + 1
+
+    required = {"WT": arg_dic["strain"]["WT"], "KO": arg_dic["strain"]["KO"]}
+    if arg_dic["strain"]["OE"] is not None:
+        required["OE"] = arg_dic["strain"]["OE"]
+
+    problems = [
+        f"{label}: no filenames contain '{substring}' (set with --{label.lower()})"
+        for label, substring in required.items()
+        if counts.get(label, 0) == 0
+    ]
+    if problems:
+        raise SystemExit(
+            "\nERROR: some groups matched no .mzML files:\n"
+            + "\n".join(problems)
+            + "\nCheck the substrings against the filenames listed above "
+            "(matching is case-insensitive)."
+        )
+
+
 
 def main(arg_dic):
     mzml_files = get_mzML_paths(arg_dic)
@@ -124,6 +148,7 @@ def main(arg_dic):
     conditions = get_conditions(classified_files, mzml_files)
 
     print_summary(classified_files)
+    check_groups(classified_files, arg_dic)
     return classified_files,mzml_files,conditions
 
 

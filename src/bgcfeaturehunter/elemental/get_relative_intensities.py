@@ -26,11 +26,9 @@ def make_lookup(cf_xml_file):
     headers = cm.getColumnHeaders()
 
     for map_id, header in headers.items():
-        file_name_no_ext = header.filename
-        filenameXML = file_name_no_ext.replace(".mzML",".featureXML")
-        
+        filenameXML = os.path.splitext(os.path.basename(header.filename))[0] + ".featureXML"
         mapping_dic[map_id] = filenameXML
-
+        
     return mapping_dic, cm
 
 
@@ -61,16 +59,19 @@ def feature_iteration(consensus_map, feature_csv):
 def build_feature_index(mapping_dic, f_xml_files):
 
     indexed_maps = {}
+    xml_by_name = {os.path.basename(path): path for path in f_xml_files}
 
     for map_id, expected_filename in mapping_dic.items():
-        target_path = next((path for path in f_xml_files if expected_filename in path), None)
+        target_path = xml_by_name.get(expected_filename)
+        if target_path is None:
+            raise FileNotFoundError(
+                f"No featureXML named '{expected_filename}' found in "
+                f"<out>/featureXML/. Was the preprocessing step run with these files?"
+            )
 
         fmap = oms.FeatureMap()
-
         oms.FeatureXMLFile().load(target_path, fmap)
-
         feature_dict = {feature.getUniqueId(): feature for feature in fmap}
-
         indexed_maps[map_id] = feature_dict
 
     return indexed_maps
