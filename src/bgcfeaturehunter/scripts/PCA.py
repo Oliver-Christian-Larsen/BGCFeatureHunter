@@ -41,8 +41,7 @@ def pca(filtered_df, conditions, arg_dic):
             sample_conditions[sample] = (strain, medium)
 
     strains = sorted(set(strain for strain, medium in conditions))
-    media = sorted(set(medium for strain, medium in conditions))
-
+    media = sorted({medium for strain, medium in conditions}, key=lambda m: (m is None, str(m)))
     colors = plt.cm.tab10(np.linspace(0, 1, len(strains)))
     strain_colors = dict(zip(strains, colors))
 
@@ -126,7 +125,7 @@ def pca(filtered_df, conditions, arg_dic):
                 color="black",
                 markerfacecolor="white",
                 markersize=8,
-                label=medium
+                label=medium if medium is not None else "no medium",
             )
         )
 
