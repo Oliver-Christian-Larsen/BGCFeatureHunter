@@ -48,9 +48,6 @@ def main():
     if args.elemental_feature_file is None:
         args.elemental_feature_file = os.path.join(args.out, "unique_features.csv")
     
-    
-    
-    
     arg_dic = {
         "strain" : {
             "KO" : args.ko, 
@@ -83,8 +80,7 @@ def main():
     from bgcfeaturehunter.scripts import mass_deficit
     from bgcfeaturehunter.scripts import FDR
     from bgcfeaturehunter.scripts import adduct_detection
-    from bgcfeaturehunter.elemental import calculate_MF
-    from bgcfeaturehunter.elemental import get_relative_intensities
+
     
     print("Loaded libraries, running pipeline!")
     
@@ -106,6 +102,8 @@ def main():
         adduct_detection.main(config,arg_dic)
     
     if args.elemental:
+        from bgcfeaturehunter.elemental import calculate_MF
+        from bgcfeaturehunter.elemental import get_relative_intensities
         ratio_data = get_relative_intensities.main(arg_dic)
         calculate_MF.main(ratio_data,arg_dic)
     
