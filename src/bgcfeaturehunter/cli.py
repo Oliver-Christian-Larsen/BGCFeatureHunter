@@ -87,7 +87,8 @@ def main():
     
     classified_files,mzml_files,conditions = classify_files.main(arg_dic)
     
-    pp.main(config,arg_dic,mzml_files)
+    ref_file = pp.main(config,arg_dic,mzml_files)
+
     filter_features.main(config,arg_dic,classified_files,conditions)
     
     PCA.main(arg_dic,conditions)

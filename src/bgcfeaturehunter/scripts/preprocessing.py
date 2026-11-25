@@ -168,7 +168,12 @@ def main(config,arg_dic,mzML_files):
     gc.collect()
     
     unfiltered_csv_path = save_consensus_csv_unfiltered(consensus_map, output_path)
+
     print("Preprocessing Complete")
+
+    return ref_file
+
+
 
 if __name__ == "__main__":
     main()
