@@ -48,4 +48,7 @@ Useful extras: '--media PDA YES', '--adducts', '--fdr', '--elemental', '--no_pdf
 
 Results are written to the output folder, including 'unique_features.csv' and 'waterfall.pdf'.
 
+
+Molecular formula calculations are performed using the find-mfs v0.4.0 package.
+
 Feel free to reach out @ ocl@bio.aau.dk.
